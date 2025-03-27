@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const isDeleteSchema = require("./isDelete.model");
 
 const MentorSchema = new mongoose.Schema({
     user: {
@@ -20,6 +21,7 @@ const MentorSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Course" 
     }],
+    ...isDeleteSchema.obj
 });
 
 module.exports = mongoose.model("Mentor", MentorSchema);

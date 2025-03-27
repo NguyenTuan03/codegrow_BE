@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const isDeleteSchema = require("./isDelete.model");
 
 const EnrollmentSchema = new mongoose.Schema({
     user: {
@@ -21,6 +22,7 @@ const EnrollmentSchema = new mongoose.Schema({
          type: Date, 
          default: Date.now 
     },
+    ...isDeleteSchema.obj
 });
 
 module.exports = mongoose.model("Enrollment", EnrollmentSchema);

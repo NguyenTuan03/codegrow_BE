@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const isDeleteSchema = require("./isDelete.model");
 
 const CourseSchema = new mongoose.Schema({
     title: { 
@@ -25,6 +26,7 @@ const CourseSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    ...isDeleteSchema.obj
 });
 
 module.exports = mongoose.model("Course", CourseSchema);

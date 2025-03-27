@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const isDeleteSchema = require("./isDelete.model");
 
 const PaymentSchema = new mongoose.Schema({
     user: { 
@@ -24,6 +25,7 @@ const PaymentSchema = new mongoose.Schema({
          type: Date, 
          default: Date.now 
     },
+    ...isDeleteSchema.obj
 });
 
 module.exports = mongoose.model("Payment", PaymentSchema);

@@ -1,33 +1,37 @@
 const mongoose = require("mongoose");
+const isDeleteSchema = require("./isDelete.model");
 
-const ReviewSchema = new mongoose.Schema({
-    course: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "Course", required: true 
+const ResponseSchema = new mongoose.Schema(
+    {
+        sender: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: "User", 
+            required: true 
+        },
+        recipient: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: "User"
+        },
+        course: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: "Course" 
+        },
+        message: { 
+            type: String, 
+            required: true 
+        },
+        status: { 
+            type: String, 
+            enum: ["pending", "resolved", "rejected"], 
+            default: "pending" 
+        },
+        qaqcReply: { 
+            type: String, 
+            default: null 
+        },
+        ...isDeleteSchema.obj
     },
-    user: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "User", 
-        required: true 
-    },
-    rating: { 
-        type: Number, 
-        required: true, 
-        min: 1, 
-        max: 5 
-    },
-    comment: { 
-        type: String, 
-        required: true 
-    },
-    qaqcReply: { 
-        type: String, 
-        default: null 
-    },
-    createdAt: { 
-        type: Date, 
-        default: Date.now 
-    },
-});
+    { timestamps: true, collection: "responses" }
+);
 
-module.exports = mongoose.model("Review", ReviewSchema);
+module.exports = mongoose.model("Response", ResponseSchema);
