@@ -6,10 +6,16 @@ const compression = require("compression");
 var logger = require('morgan');
 const cookieParser = require("cookie-parser");
 var path = require('path');
+const session = require("express-session");
 
 const middlewareLoader = (app) => {
   app.use(logger('dev'));
   app.use(cookieParser());
+  app.use(session({
+    secret: process.env.ACCESS_TOKEN_SECRET, 
+    resave: false,
+    saveUninitialized: false
+  }));
   app.use(express.static(path.join(__dirname, 'public')));
   app.use(helmet());
   app.use(compression())
