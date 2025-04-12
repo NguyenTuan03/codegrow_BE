@@ -6,6 +6,7 @@
     "start": "node --watch ./bin/www"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "chalk": "^5.4.1",
     "compression": "^1.8.0",
     "cookie-parser": "~1.4.4",
@@ -13,6 +14,7 @@
     "debug": "~2.6.9",
     "dotenv": "^16.4.7",
     "express": "~4.16.1",
+    "express-session": "^1.18.1",
     "helmet": "^8.1.0",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",

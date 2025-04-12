@@ -6,9 +6,10 @@ class AuthController {
     
     }
     async logInGoogle(req,res) {
+        console.log(req.user);        
         new OK({
             message: 'Log in successfully',
-            metadata: await AuthService.logInGoogle({data:req})
+            metadata: await AuthService.logInGoogle({data:req.user})
         }).send(res)
     }
 }
