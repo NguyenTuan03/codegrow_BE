@@ -9,4 +9,4 @@ const databaseLoader = async () => {
         process.exit(1);
     }
 }
-module.exports = databaseLoader; 
+module.exports = databaseLoader;
