@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema(
             type:String,
             rquired: true
         },
+        isVerified: { 
+            type: Boolean, 
+            default: false 
+        },
         ...isDeleteSchema.obj
     },
     {

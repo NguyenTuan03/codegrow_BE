@@ -26,6 +26,15 @@ passport.deserializeUser((user, done) => {
 
 router.use(passport.initialize());
 router.use(passport.session());
+/**
+ * @swagger
+ * /auth/login/google:
+ *   get:
+ *     summary: Google login entry point
+ *     responses:
+ *       302:
+ *         description: Redirect to Google login
+ */
 router.get('/login/google',
   passport.authenticate('google', { 
     scope:
@@ -33,10 +42,24 @@ router.get('/login/google',
     }
   )
 );
-
+/**
+ * @swagger
+ * /auth/login/google/callback:
+ *   get:
+ *     summary: Callback from Google login
+ *     responses:
+ *       200:
+ *         description: Logged in successfully
+ */
 router.get('/login/google/callback',
   passport.authenticate("google", { failureRedirect: "/" }),
   catchAsyncHandle(authController.logInGoogle)
 );
 
+router.get('/signup', 
+  catchAsyncHandle(authController.signUp)
+)
+router.post('/verify-email',
+  catchAsyncHandle(authController.Verify)
+)
 module.exports = router;

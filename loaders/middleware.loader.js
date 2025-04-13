@@ -7,7 +7,8 @@ var logger = require('morgan');
 const cookieParser = require("cookie-parser");
 var path = require('path');
 const session = require("express-session");
-
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require("../swagger/swaggerConfig");
 const middlewareLoader = (app) => {
   app.use(logger('dev'));
   app.use(cookieParser());
@@ -22,6 +23,7 @@ const middlewareLoader = (app) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.use(cors({
     origin: "*", 
     methods: ["GET","Head","PUT","PATCH","POST","DELETE"],

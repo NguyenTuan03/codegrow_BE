@@ -1,6 +1,6 @@
 const COLLECTION = {
-    user: 'USER',
-    error: 'ERROR'
+    user: 'users',
+    error: 'errors'
 }
 const USER_ROLES = {
     ADMIN:'Admin',
