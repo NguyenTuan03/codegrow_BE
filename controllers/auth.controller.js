@@ -24,5 +24,17 @@ class AuthController {
             metadata: await AuthService.VerifyEmail(req.body)
         })
     }
+    async forgotPassword(req,res) {
+        new CREATED({
+            message:'Reset email sent',
+            metadata: await AuthService.forgotPasswordRequest(req.body)
+        })
+    }
+    async resetPassword(req,res) {
+        new CREATED({
+            message:'Reset password successfully',
+            metadata:await AuthService.resetPass(req.body)
+        })
+    }
 }
 module.exports = new AuthController()
