@@ -62,4 +62,10 @@ router.get('/signup',
 router.post('/verify-email',
   catchAsyncHandle(authController.Verify)
 )
+router.post('/forgot-password',
+  catchAsyncHandle(authController.forgotPassword)
+)
+router.post('/reset-password',
+  catchAsyncHandle(authController.resetPassword)
+)
 module.exports = router;

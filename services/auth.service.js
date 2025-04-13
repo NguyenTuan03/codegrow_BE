@@ -148,5 +148,62 @@ class AuthService {
             res.status(400).json({ message: "Invalid or expired token" });
           }
     }
+    static forgotPasswordRequest = async ({email}) => {
+        try {
+            const user = await userModel.findOne({ email });
+            if (!user) throw new UnauthorizedRequestError('User not found')
+        
+            const resetToken = jwt.sign(
+              { id: user._id },
+              process.env.ACCESS_TOKEN_SECRET,
+              { expiresIn: process.env.ACCESS_TOKEN_FORGOT_EXPIRES }
+            );
+        
+            const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+        
+            const transporter = nodemailer.createTransport({
+              service: "Gmail",
+              auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASSWORD,
+              },
+            });
+        
+            const mailOptions = {
+              from: `"Support" <${process.env.EMAIL_USER}>`,
+              to: email,
+              subject: "Reset Your Password",
+              html: `
+                <h3>Hello,</h3>
+                <p>You requested to reset your password. Click the link below:</p>
+                <a href="${resetLink}">Reset Password</a>
+                <p>This link will expire in 15 minutes.</p>
+              `,
+            };
+        
+            await transporter.sendMail(mailOptions);
+            return;            
+          } catch (err) {
+            console.error(err);            
+            throw new InternalServerError('Error sending email')
+          }
+    }
+    static resetPass = async ({token,newpass}) => {
+        try {
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            const user = await userModel.findById(decoded.id);
+        
+            if (!user) return res.status(404).json({ message: "User not found" });
+        
+            const passwordHash = await bcrypt.hash(newpass, 10);
+            user.password = passwordHash;
+            await user.save();
+        
+            return;
+        } catch (err) {
+            console.error(err);            
+            throw new UnauthorizedRequestError('Invalid or expired token')
+        }
+    }
 }
 module.exports = AuthService
