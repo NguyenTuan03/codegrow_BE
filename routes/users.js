@@ -56,4 +56,10 @@ router.get('/login/google/callback',
   catchAsyncHandle(authController.logInGoogle)
 );
 
+router.get('/signup', 
+  catchAsyncHandle(authController.signUp)
+)
+router.post('/verify-email',
+  catchAsyncHandle(authController.Verify)
+)
 module.exports = router;
