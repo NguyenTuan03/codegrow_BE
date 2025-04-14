@@ -17,7 +17,7 @@ class AuthService {
         const user = await UserModel.findOne({ email }).lean();
 
         if (!user) throw new UnauthorizedRequestError('Invalid email or password');
-        if (user.isDeleted) throw new UnauthorizedRequestError('User is deleted');
+        if (user.isDeleted === 'true' || user.isDeleted === true) throw new UnauthorizedRequestError('User is deleted');
         if (!user.isVerified) throw new BadRequestError('Account is not active yet');
 
         const pass = await bcrypt.compare(password,user.password)
