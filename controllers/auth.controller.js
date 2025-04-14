@@ -15,27 +15,27 @@ class AuthController {
     }
     async signUp(req,res) {
         new CREATED({
-            message:'Sign up successfully',
+            message:'User registered successfully. Please check your email to verify your account.',
             metadata: await AuthService.signUp(req.body)
-        })
+        }).send(res)
     }
-    async Verify(req,res) {
+    async Verify(req,res) {        
         new CREATED({
             message: 'Verify successfully',
             metadata: await AuthService.VerifyEmail(req.body)
-        })
+        }).send(res)
     }
     async forgotPassword(req,res) {
         new CREATED({
             message:'Reset email sent',
             metadata: await AuthService.forgotPasswordRequest(req.body)
-        })
+        }).send(res)
     }
     async resetPassword(req,res) {
         new CREATED({
             message:'Reset password successfully',
             metadata:await AuthService.resetPass(req.body)
-        })
+        }).send(res)
     }
 }
 module.exports = new AuthController()

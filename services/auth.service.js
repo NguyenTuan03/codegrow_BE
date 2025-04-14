@@ -39,7 +39,7 @@ class AuthService {
             email:data.email
         }).lean()
         console.log(user);        
-        if (user) {            
+        if (user) {
             if (user.isDeleted === "true" || user.isDeleted === true) {
                 throw new UnauthorizedRequestError('User is deleted')
             } else {  
@@ -81,15 +81,15 @@ class AuthService {
         return accessToken;
     }
     static signUp = async ({fullName, email,password}) => {
-        const createUserDto = new CreateUserDTO(fullName, email, password);
-        await createUserDto.validate();
+        // const createUserDto = new CreateUserDTO(fullName, email, password);
+        // await createUserDto.validate();
 
         const userHolder = await User.findOne({ email }).lean();
         if (userHolder) throw new BadRequestError("Email already exists");
 
         const passwordHash = await bcrypt.hash(
-        password,
-        parseInt(process.env.PASSWORD_SALT)
+            password,
+            parseInt(process.env.PASSWORD_SALT)
         );
 
         const verifyToken = createAccessToken(
@@ -114,39 +114,53 @@ class AuthService {
         });
 
         const mailOptions = {
-        from: `"Your App Name" <${process.env.EMAIL_USER}>`,
+        from: `"CODEGROW " <${process.env.EMAIL_USER}>`,
         to: email,
-        subject: "Welcome to Our App! Please verify your email",
+        subject: "Welcome to CODEGROW! Please verify your email",
         html: `
             <h3>Hello ${fullName},</h3>
             <p>Thanks for signing up! Please click the link below to verify your email address:</p>
-            <a href="${process.env.CLIENT_URL}/verify-email?token=${verifyToken}">Verify Email</a>
+            <a href="${process.env.CLIENT_URL}/register/verify?token=${verifyToken}">Verify Email</a>
         `,
         };
 
         await transporter.sendMail(mailOptions);
 
-        return {
-        message: "User registered successfully. Please check your email to verify your account.",
-        };
+        return newUser;
     }
-    static VerifyEmail = async ({token}) => {
+    static VerifyEmail = async ({token,socketId}) => {
         try {
+            console.log(token, socketId);
+          
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
             const user = await User.findOne({ email: decoded.email });
         
-            if (!user) return res.status(404).json({ message: "User not found" });
-        
+            if (!user) {
+              global.io.to(socketId).emit("verify_Failed", {
+                message: "Người dùng không tồn tại!",
+              });
+              return null; 
+            }
+            
             if (user.isVerified) {
-              return res.status(400).json({ message: "User already verified" });
+              global.io.to(socketId).emit("verify_Failed", {
+                message: "Tài khoản đã được xác minh trước đó.",
+              });
+              return null; 
             }
         
             user.isVerified = true;
             await user.save();
-        
-            return;
+            if (socketId && global.io) {
+                global.io.to(socketId).emit("verify_success", {
+                  message: "Tài khoản đã được xác minh thành công!",
+                  email: user.email,
+                });
+              }
+                        
+            return user
           } catch (err) {
-            res.status(400).json({ message: "Invalid or expired token" });
+            console.log(err);            
           }
     }
     static forgotPasswordRequest = async ({email}) => {
