@@ -142,7 +142,7 @@ router.post('/signup',
  * @swagger
  * /auth/verify:
  *   get:
- *     summary: Verify Google token and authenticate user
+ *     summary: Verify email token and authenticate user
  *     tags: 
  *       - Auth
  *     requestBody:
@@ -163,7 +163,7 @@ router.post('/signup',
  *       401:
  *         description: Invalid or expired token
  */
-router.get('/verify',
+router.post('/verify-email',
   catchAsyncHandle(authController.Verify)
 )
 /**

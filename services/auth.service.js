@@ -1,4 +1,4 @@
-const User = require('../models/user.model')
+const UserModel = require('../models/user.model')
 const {createAccessToken} = require('../utils/auth.util')
 const {
     UnauthorizedRequestError,
@@ -14,11 +14,15 @@ class AuthService {
     static logIn = async ({email,password}) => {
         if (!email || !password) throw new BadRequestError('Email and password are required')
         
-        const user = await User.findOne({email, isDeleted: false}).lean()        
-        if (!user.isVerified) throw new BadRequestError('Account is not active yet')
-        if (!user) throw new UnauthorizedRequestError('Invalid email or password')
+        const user = await UserModel.findOne({ email }).lean();
+
+        if (!user) throw new UnauthorizedRequestError('Invalid email or password');
+        if (user.isDeleted) throw new UnauthorizedRequestError('User is deleted');
+        if (!user.isVerified) throw new BadRequestError('Account is not active yet');
 
         const pass = await bcrypt.compare(password,user.password)
+        console.log(pass);
+        
         if (!pass) throw new UnauthorizedRequestError('Invalid email or password')
         
         const accessToken = createAccessToken(
@@ -35,11 +39,11 @@ class AuthService {
 
     }
     static logInGoogle = async ({data}) => {                
-        const user = await User.findOne({
+        const user = await UserModel.findOne({
             email:data.email
         }).lean()
         console.log(user);        
-        if (user) {            
+        if (user) {
             if (user.isDeleted === "true" || user.isDeleted === true) {
                 throw new UnauthorizedRequestError('User is deleted')
             } else {  
@@ -54,7 +58,7 @@ class AuthService {
                 return accessToken  
             }
         }
-        const newUser =  await User.create({
+        const newUser =  await UserModel.create({
             fullName: `${data.name.givenName} ${data.name.familyName}`,
             email:data.email,
             password: await bcrypt.hash(
@@ -81,15 +85,15 @@ class AuthService {
         return accessToken;
     }
     static signUp = async ({fullName, email,password}) => {
-        const createUserDto = new CreateUserDTO(fullName, email, password);
-        await createUserDto.validate();
+        // const createUserDto = new CreateUserDTO(fullName, email, password);
+        // await createUserDto.validate();
 
-        const userHolder = await User.findOne({ email }).lean();
+        const userHolder = await UserModel.findOne({ email }).lean();
         if (userHolder) throw new BadRequestError("Email already exists");
 
         const passwordHash = await bcrypt.hash(
-        password,
-        parseInt(process.env.PASSWORD_SALT)
+            password,
+            parseInt(process.env.PASSWORD_SALT)
         );
 
         const verifyToken = createAccessToken(
@@ -98,7 +102,7 @@ class AuthService {
         process.env.ACCESS_TOKEN_EXPIRES
         );
 
-        const newUser = await User.create({
+        const newUser = await UserModel.create({
         fullName,
         email,
         password: passwordHash,
@@ -114,44 +118,58 @@ class AuthService {
         });
 
         const mailOptions = {
-        from: `"Your App Name" <${process.env.EMAIL_USER}>`,
+        from: `"CODEGROW " <${process.env.EMAIL_USER}>`,
         to: email,
-        subject: "Welcome to Our App! Please verify your email",
+        subject: "Welcome to CODEGROW! Please verify your email",
         html: `
             <h3>Hello ${fullName},</h3>
             <p>Thanks for signing up! Please click the link below to verify your email address:</p>
-            <a href="${process.env.CLIENT_URL}/verify-email?token=${verifyToken}">Verify Email</a>
+            <a href="${process.env.CLIENT_URL}/register/verify?token=${verifyToken}">Verify Email</a>
         `,
         };
 
         await transporter.sendMail(mailOptions);
 
-        return {
-        message: "User registered successfully. Please check your email to verify your account.",
-        };
+        return newUser;
     }
-    static VerifyEmail = async ({token}) => {
+    static VerifyEmail = async ({token,socketId}) => {
         try {
+            console.log(token, socketId);
+          
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-            const user = await User.findOne({ email: decoded.email });
+            const user = await UserModel.findOne({ email: decoded.email });
         
-            if (!user) return res.status(404).json({ message: "User not found" });
-        
+            if (!user) {
+              global.io.to(socketId).emit("verify_Failed", {
+                message: "Người dùng không tồn tại!",
+              });
+              return null; 
+            }
+            
             if (user.isVerified) {
-              return res.status(400).json({ message: "User already verified" });
+              global.io.to(socketId).emit("verify_Failed", {
+                message: "Tài khoản đã được xác minh trước đó.",
+              });
+              return null; 
             }
         
             user.isVerified = true;
             await user.save();
-        
-            return;
+            if (socketId && global.io) {
+                global.io.to(socketId).emit("verify_success", {
+                  message: "Tài khoản đã được xác minh thành công!",
+                  email: user.email,
+                });
+              }
+                        
+            return user
           } catch (err) {
-            res.status(400).json({ message: "Invalid or expired token" });
+            console.log(err);            
           }
     }
     static forgotPasswordRequest = async ({email}) => {
         try {
-            const user = await userModel.findOne({ email });
+            const user = await UserModel.findOne({ email });
             if (!user) throw new UnauthorizedRequestError('User not found')
         
             const resetToken = jwt.sign(
@@ -192,7 +210,7 @@ class AuthService {
     static resetPass = async ({token,newpass}) => {
         try {
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-            const user = await userModel.findById(decoded.id);
+            const user = await UserModel.findById(decoded.id);
         
             if (!user) return res.status(404).json({ message: "User not found" });
         
