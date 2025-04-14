@@ -10,10 +10,8 @@ class AuthController {
     }
     async logInGoogle(req,res) {
         console.log(req.user);        
-        new OK({
-            message: 'Log in successfully',
-            metadata: await AuthService.logInGoogle({data:req.user})
-        }).send(res)
+        const accessToken = await AuthService.logInGoogle({data:req.user})
+        res.redirect(`${process.env.CLIENT_URL}?token=${accessToken}`);
     }
     async signUp(req,res) {
         new CREATED({

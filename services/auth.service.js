@@ -13,8 +13,9 @@ const jwt = require('jsonwebtoken')
 class AuthService {
     static logIn = async ({email,password}) => {
         if (!email || !password) throw new BadRequestError('Email and password are required')
-
+        
         const user = await User.findOne({email, isDeleted: false}).lean()        
+        if (!user.isVerified) throw new BadRequestError('Account is not active yet')
         if (!user) throw new UnauthorizedRequestError('Invalid email or password')
 
         const pass = await bcrypt.compare(password,user.password)

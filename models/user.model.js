@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema(
             minLength: 5,
             maxLength: 100           
         },
+        avatar: {
+            type: String,
+        },     
         role: {
             type:String,
             enum: ['admin','customer','qaqc','mentor'],
@@ -27,7 +30,7 @@ const userSchema = new mongoose.Schema(
         password: {
             type:String,
             rquired: true
-        },
+        },        
         isVerified: { 
             type: Boolean, 
             default: false 
