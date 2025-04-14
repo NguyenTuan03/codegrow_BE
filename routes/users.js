@@ -141,7 +141,7 @@ router.post('/signup',
 /**
  * @swagger
  * /auth/verify:
- *   post:
+ *   get:
  *     summary: Verify Google token and authenticate user
  *     tags: 
  *       - Auth
@@ -163,7 +163,7 @@ router.post('/signup',
  *       401:
  *         description: Invalid or expired token
  */
-router.post('/verify',
+router.get('/verify',
   catchAsyncHandle(authController.Verify)
 )
 /**
