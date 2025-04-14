@@ -23,17 +23,61 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
     done(null, user);
 });
-
+ 
 router.use(passport.initialize());
 router.use(passport.session());
 /**
  * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login to the system with email and password
+ *     tags:
+ *      - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: mySecurePass123
+ *     responses:
+ *       200:
+ *         description: Login successful, returns JWT token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6...
+ *       401:
+ *         description: Invalid email or password
+ */
+router.post('/login',
+  catchAsyncHandle(authController.logIn)
+)
+/**
+ * @swagger
  * /auth/login/google:
  *   get:
- *     summary: Google login entry point
+ *     summary: Return google page
+ *     tags:
+ *      - Auth
  *     responses:
- *       302:
- *         description: Redirect to Google login
+ *       200:
+ *         description: Return google page
  */
 router.get('/login/google',
   passport.authenticate('google', { 
@@ -47,6 +91,8 @@ router.get('/login/google',
  * /auth/login/google/callback:
  *   get:
  *     summary: Callback from Google login
+ *     tags:
+ *       - Auth
  *     responses:
  *       200:
  *         description: Logged in successfully
@@ -55,16 +101,132 @@ router.get('/login/google/callback',
   passport.authenticate("google", { failureRedirect: "/" }),
   catchAsyncHandle(authController.logInGoogle)
 );
-
-router.get('/signup', 
+/**
+ * @swagger
+ * /auth/signup:
+ *   post:
+ *     summary: Register a new user
+ *     tags: 
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - fullName
+ *               - email
+ *               - password
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *                 example: John Doe
+ *               email:
+ *                 type: string
+ *                 example: johndoe@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: mySecret123
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Invalid input
+ */
+router.post('/signup', 
   catchAsyncHandle(authController.signUp)
 )
-router.post('/verify-email',
+/**
+ * @swagger
+ * /auth/verify:
+ *   post:
+ *     summary: Verify Google token and authenticate user
+ *     tags: 
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 example: ya29.A0ARrdaM...
+ *     responses:
+ *       200:
+ *         description: User verified successfully
+ *       401:
+ *         description: Invalid or expired token
+ */
+router.post('/verify',
   catchAsyncHandle(authController.Verify)
 )
+/**
+ * @swagger
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Send password reset email
+ *     tags: 
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: johndoe@example.com
+ *     responses:
+ *       200:
+ *         description: Password reset email sent
+ *       404:
+ *         description: Email not found
+ */
+
 router.post('/forgot-password',
   catchAsyncHandle(authController.forgotPassword)
 )
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: Reset user's password with token
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - newPass
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 example: abc123resetToken
+ *               newPass:
+ *                 type: string
+ *                 format: password
+ *                 example: newStrongPassword!1
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       400:
+ *         description: Invalid or expired token
+ */
+
 router.post('/reset-password',
   catchAsyncHandle(authController.resetPassword)
 )
