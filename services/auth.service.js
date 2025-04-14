@@ -178,7 +178,7 @@ class AuthService {
               { expiresIn: process.env.ACCESS_TOKEN_FORGOT_EXPIRES }
             );
         
-            const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+            const resetLink = `${process.env.CLIENT_URL}/reset?token=${resetToken}`;
         
             const transporter = nodemailer.createTransport({
               service: "Gmail",
@@ -189,7 +189,7 @@ class AuthService {
             });
         
             const mailOptions = {
-              from: `"Support" <${process.env.EMAIL_USER}>`,
+              from: `"CODEGROW" <${process.env.EMAIL_USER}>`,
               to: email,
               subject: "Reset Your Password",
               html: `
@@ -214,7 +214,7 @@ class AuthService {
         
             if (!user) return res.status(404).json({ message: "User not found" });
         
-            const passwordHash = await bcrypt.hash(newpass, 10);
+            const passwordHash = await bcrypt.hash(newpass, process.env.PASSWORD_SALT);
             user.password = passwordHash;
             await user.save();
         
