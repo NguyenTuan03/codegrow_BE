@@ -17,6 +17,6 @@ module.exports = async(app,server) => {
     routers(app);
 
     console.log("🧩 Loading socket...");
-    setupSocket(server); // ⬅️ nếu chạy tới đây thì dòng dưới sẽ in
+    setupSocket(server); 
     console.log("✅ Socket loader loaded!");
 }
