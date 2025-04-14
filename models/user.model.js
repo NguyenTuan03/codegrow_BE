@@ -12,8 +12,8 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type:String,
-            enum: ['Admin','User','QAQC','Mentor'],
-            default:'User'
+            enum: ['admin','customer','qaqc','mentor'],
+            default:'customer'
         },
         wallet: { 
             type: Number, 

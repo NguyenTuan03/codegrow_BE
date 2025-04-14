@@ -3,9 +3,9 @@ const COLLECTION = {
     error: 'errors'
 }
 const USER_ROLES = {
-    ADMIN:'Admin',
-    QAQC: 'QAQC',
-    USER:'User',
-    MENTOR:'Mentor'
+    ADMIN:'admin',
+    QAQC: 'qaqc',
+    USER:'customer',
+    MENTOR:'mentor'
 }
 module.exports = {COLLECTION, USER_ROLES}
