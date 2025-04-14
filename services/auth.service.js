@@ -1,4 +1,4 @@
-const User = require('../models/user.model')
+const UserModel = require('../models/user.model')
 const {createAccessToken} = require('../utils/auth.util')
 const {
     UnauthorizedRequestError,
@@ -14,11 +14,15 @@ class AuthService {
     static logIn = async ({email,password}) => {
         if (!email || !password) throw new BadRequestError('Email and password are required')
         
-        const user = await User.findOne({email, isDeleted: false}).lean()        
-        if (!user.isVerified) throw new BadRequestError('Account is not active yet')
-        if (!user) throw new UnauthorizedRequestError('Invalid email or password')
+        const user = await UserModel.findOne({ email }).lean();
+
+        if (!user) throw new UnauthorizedRequestError('Invalid email or password');
+        if (user.isDeleted) throw new UnauthorizedRequestError('User is deleted');
+        if (!user.isVerified) throw new BadRequestError('Account is not active yet');
 
         const pass = await bcrypt.compare(password,user.password)
+        console.log(pass);
+        
         if (!pass) throw new UnauthorizedRequestError('Invalid email or password')
         
         const accessToken = createAccessToken(
@@ -35,7 +39,7 @@ class AuthService {
 
     }
     static logInGoogle = async ({data}) => {                
-        const user = await User.findOne({
+        const user = await UserModel.findOne({
             email:data.email
         }).lean()
         console.log(user);        
@@ -54,7 +58,7 @@ class AuthService {
                 return accessToken  
             }
         }
-        const newUser =  await User.create({
+        const newUser =  await UserModel.create({
             fullName: `${data.name.givenName} ${data.name.familyName}`,
             email:data.email,
             password: await bcrypt.hash(
@@ -84,7 +88,7 @@ class AuthService {
         // const createUserDto = new CreateUserDTO(fullName, email, password);
         // await createUserDto.validate();
 
-        const userHolder = await User.findOne({ email }).lean();
+        const userHolder = await UserModel.findOne({ email }).lean();
         if (userHolder) throw new BadRequestError("Email already exists");
 
         const passwordHash = await bcrypt.hash(
@@ -98,7 +102,7 @@ class AuthService {
         process.env.ACCESS_TOKEN_EXPIRES
         );
 
-        const newUser = await User.create({
+        const newUser = await UserModel.create({
         fullName,
         email,
         password: passwordHash,
@@ -133,7 +137,7 @@ class AuthService {
             console.log(token, socketId);
           
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-            const user = await User.findOne({ email: decoded.email });
+            const user = await UserModel.findOne({ email: decoded.email });
         
             if (!user) {
               global.io.to(socketId).emit("verify_Failed", {
@@ -165,7 +169,7 @@ class AuthService {
     }
     static forgotPasswordRequest = async ({email}) => {
         try {
-            const user = await userModel.findOne({ email });
+            const user = await UserModel.findOne({ email });
             if (!user) throw new UnauthorizedRequestError('User not found')
         
             const resetToken = jwt.sign(
@@ -206,7 +210,7 @@ class AuthService {
     static resetPass = async ({token,newpass}) => {
         try {
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-            const user = await userModel.findById(decoded.id);
+            const user = await UserModel.findById(decoded.id);
         
             if (!user) return res.status(404).json({ message: "User not found" });
         
