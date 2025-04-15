@@ -4,4 +4,9 @@ const createAccessToken = (attr,secret, expiresIn) => {
         expiresIn:expiresIn
     })
 }
-module.exports = {createAccessToken}
+const createRefreshToken = (attr, secret, expiredIn) => {
+    return jwt.sign(attr,secret, {
+        expiresIn: expiredIn
+    })
+}
+module.exports = {createAccessToken,createRefreshToken}

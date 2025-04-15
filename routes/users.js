@@ -4,6 +4,7 @@ const AuthMiddleware = require('../middlewares/auth.middleware');
 const userController = require('../controllers/user.controller');
 var router = express.Router();
 router.get('/',
+    catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(userController.getAllUsers)
 )
 module.exports = router;

@@ -1,5 +1,5 @@
 const UserModel = require('../models/user.model')
-const {createAccessToken} = require('../utils/auth.util')
+const {createAccessToken, createRefreshToken} = require('../utils/auth.util')
 const {
     UnauthorizedRequestError,
     InternalServerError,
@@ -20,23 +20,39 @@ class AuthService {
         if (user.isDeleted === 'true' || user.isDeleted === true) throw new UnauthorizedRequestError('User is deleted');
         if (!user.isVerified) throw new BadRequestError('Account is not active yet');
 
-        const pass = await bcrypt.compare(password,user.password)
-        console.log(pass);
+        const pass = await bcrypt.compare(password,user.password)        
         
         if (!pass) throw new UnauthorizedRequestError('Invalid email or password')
-        
+        const payload = {
+            _id: user._id,
+            role: user.role,
+            name: user.fullName,
+        };
         const accessToken = createAccessToken(
-            {
-                _id: user._id,
-                role: user.role,
-                name: user.fullName
-            },
+            payload,
             process.env.ACCESS_TOKEN_SECRET,
             process.env.ACCESS_TOKEN_EXPIRES
         )
-        if (!accessToken) throw new InternalServerError('Cannot generate access token')
-        return accessToken;
 
+        const refreshToken = createRefreshToken(
+            payload,            
+            process.env.REFRESH_TOKEN_SECRET,
+            process.env.REFRESH_TOKEN_FORGOT_EXPIRES,
+        )        
+
+        if (!accessToken) throw new InternalServerError('Cannot generate access token')
+        return { accessToken, refreshToken };
+
+    } 
+    static refreshToken = async ({token}) => {
+        if (!token) return new UnauthorizedRequestError('No refresh token')
+        const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+        const newAccessToken = createAccessToken({
+          _id: decoded._id,
+          role: decoded.role,
+          name: decoded.name,
+        });
+        return newAccessToken;
     }
     static logInGoogle = async ({data}) => {                
         const user = await UserModel.findOne({

@@ -25,8 +25,9 @@ const middlewareLoader = (app) => {
   app.use(express.json());
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.use(cors({
-    origin: "*", 
-    methods: ["GET","Head","PUT","PATCH","POST","DELETE"],
+    origin: process.env.CLIENT_URL,
+    credentials:true,
+    methods: ["GET","HEAD","PUT","PATCH","POST","DELETE"],
     allowedHeaders: ["Content-type","Authorization"]
   }));
   console.log("Middleware loaded");

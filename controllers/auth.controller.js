@@ -3,10 +3,23 @@ const { OK, CREATED } = require("../core/responses/success.response")
 const AuthService = require('../services/auth.service')
 class AuthController {
     async logIn(req,res) {
+        const { accessToken,refreshToken } = await AuthService.logIn(req.body);
+        res.cookie('sessionId',refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'Strict',
+            maxAge: 24 * 60 * 60 * 1000, 
+          })
         new OK({
             message: 'Log in successfully',
-            metadata: await AuthService.logIn(req.body)
+            metadata: accessToken
         }).send(res)
+    }
+    async refreshToken(req,res) {        
+        new CREATED({
+            message:'New access token',
+            metadata: await AuthService.refreshToken(req.cookies.refreshToken)
+        })
     }
     async logInGoogle(req,res) {
         console.log(req.user);        
