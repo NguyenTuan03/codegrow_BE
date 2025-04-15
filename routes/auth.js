@@ -211,12 +211,12 @@ router.post('/forgot-password',
  *             type: object
  *             required:
  *               - token
- *               - newPass
+ *               - newpass
  *             properties:
  *               token:
  *                 type: string
  *                 example: abc123resetToken
- *               newPass:
+ *               newpass:
  *                 type: string
  *                 format: password
  *                 example: newStrongPassword!1
