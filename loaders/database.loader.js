@@ -1,5 +1,4 @@
 const { default: mongoose } = require("mongoose")
-const errorModel = require('../models/error.model')
 const databaseLoader = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URI);  

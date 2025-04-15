@@ -11,7 +11,4 @@ const server = http.createServer(app);
   await loaders(app,server);
 })();
 
-
-app.use(handleErrorResponse)
-
 module.exports = { app, server };
