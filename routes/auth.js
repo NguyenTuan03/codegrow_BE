@@ -3,8 +3,11 @@ var router = express.Router();
 const authController = require('../controllers/auth.controller');
 const { catchAsyncHandle } = require('../middlewares/error.middleware');
 const passport = require('passport');
+const AuthMiddleware = require('../middlewares/auth.middleware');
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
-router.get('/',(req,res) => {
+router.get('/',
+  catchAsyncHandle(AuthMiddleware),
+  (req,res) => {
   res.send('<a href="/auth/login/google">Google</a>')
 }) 
 passport.use(new GoogleStrategy({
@@ -67,6 +70,9 @@ router.use(passport.session());
  */
 router.post('/login',
   catchAsyncHandle(authController.logIn)
+)
+router.get('/refresh-token',
+  catchAsyncHandle(authController.refreshToken)
 )
 /**
  * @swagger

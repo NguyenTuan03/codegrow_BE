@@ -3,6 +3,12 @@ const jwt = require('jsonwebtoken')
 const AuthMiddleware = async (req,res,next) => {
     try {
         const {authorization} = req.headers;
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader?.startsWith('Bearer ')) {            
+            throw new UnauthorizedRequestError('Missing or invalid Authorization header')
+        }
+
         if (!authorization) {
             throw new UnauthorizedRequestError("Authorization header is required");
         }
