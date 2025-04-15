@@ -211,9 +211,9 @@ class AuthService {
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
             const user = await UserModel.findById(decoded.id);
         
-            if (!user) return res.status(404).json({ message: "User not found" });
-        
-            const passwordHash = await bcrypt.hash(newpass, process.env.PASSWORD_SALT);
+            if (!user) return res.status(404).json({ message: "User not found" });            
+            
+            const passwordHash = await bcrypt.hash(newpass,parseInt(process.env.PASSWORD_SALT));
             user.password = passwordHash;
             await user.save();
         
