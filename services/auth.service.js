@@ -178,8 +178,7 @@ class AuthService {
               { expiresIn: process.env.ACCESS_TOKEN_FORGOT_EXPIRES }
             );
         
-            const resetLink = `${process.env.CLIENT_URL}/reset?token=${resetToken}`;
-        
+            const resetLink = `${process.env.CLIENT_URL}/password/reset?token=${resetToken}`;            
             const transporter = nodemailer.createTransport({
               service: "Gmail",
               auth: {
