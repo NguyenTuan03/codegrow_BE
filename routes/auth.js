@@ -15,7 +15,7 @@ passport.use(new GoogleStrategy({
     clientSecret:process.env.GOOGLE_CLIENT_SECRET,
     callbackURL:process.env.GOOGLE_OAUTH_REDIRECT_URL,
     passReqToCallback:true
-  },  
+  },
   function(request, accessToken, refreshToken, profile, done) {
     return done(null,profile)
   }

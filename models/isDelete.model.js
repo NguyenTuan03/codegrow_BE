@@ -3,7 +3,7 @@ const { default: mongoose } = require("mongoose");
 const isDeleteSchema = mongoose.Schema(
     {
         isDeleted: {
-            type:String,
+            type:Boolean,
             default:false
         }
     }
