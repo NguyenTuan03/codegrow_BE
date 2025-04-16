@@ -4,9 +4,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Your Project API',
+      title: 'CODEGROW',
       version: '1.0.0',
-      description: 'Documentation for your Node.js API',
+      description: 'NAM MÔ A DI ĐÀ PHẬT',      
     },
     servers: [
       {
