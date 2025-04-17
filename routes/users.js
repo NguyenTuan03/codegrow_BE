@@ -138,4 +138,9 @@ router.delete('/:id',
     checkRoles({requiredRoles:[USER_ROLES.ADMIN]}),
     catchAsyncHandle(userController.deleteUser)
 )
+router.post('/enroll',
+    catchAsyncHandle(AuthMiddleware),
+    checkRoles({requiredRoles:[USER_ROLES.USER]}),
+    catchAsyncHandle(userController.enrollCourse)
+)
 module.exports = router;

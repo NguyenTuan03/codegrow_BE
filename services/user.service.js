@@ -1,5 +1,7 @@
 const { USER_ROLES } = require("../configs/user.config")
 const { NotFoundRequestError, BadRequestError } = require("../core/responses/error.response")
+const courseModel = require("../models/course.model")
+const enrollCourseModel = require('../models/enroll.model')
 const userModel = require("../models/user.model")
 const { getAllUsers } = require("../repositories/user.repo")
 const bcrypt = require('bcrypt')
@@ -58,6 +60,23 @@ class UserService {
             {isDeleted: true}
         )
         return user
+    }
+    static enrollCourse = async ({id, courseId}) => {
+        if (!courseId) throw new BadRequestError('CourseId is required')
+        const course = await courseModel.findById(courseId)
+        if (!course) throw new BadRequestError('Course not found')
+        
+        const alreadyEnrolled = await enrollCourseModel.findOne({
+            user: id,
+            course: courseId
+        })
+        if (alreadyEnrolled) throw new BadRequestError('You already enroll this course')
+        
+        const enrollMent = await enrollCourseModel.create({
+            user: id,
+            course: courseId
+        })
+        return enrollMent;
     }
 }
 module.exports = UserService
