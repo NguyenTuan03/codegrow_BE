@@ -61,7 +61,7 @@ class UserService {
         )
         return user
     }
-    static enrollCourse = async ({id, courseId}) => {
+    static enrollCourse = async ({id, courseId}) => {                
         if (!courseId) throw new BadRequestError('CourseId is required')
         const course = await courseModel.findById(courseId)
         if (!course) throw new BadRequestError('Course not found')
@@ -71,11 +71,26 @@ class UserService {
             course: courseId
         })
         if (alreadyEnrolled) throw new BadRequestError('You already enroll this course')
+        const user = await userModel.findById(id);
+
+        if (!user) throw new BadRequestError('You already enroll this course')
+
+        if (user.wallet < course.price) throw new BadRequestError('Insufficient balance to enroll in this course')
         
+        user.wallet -= course.price
+        await user.save()
+
+        await courseModel.findByIdAndUpdate(courseId,{
+            $inc: {
+                enrolledCount: 1
+            }
+        })
+
         const enrollMent = await enrollCourseModel.create({
             user: id,
             course: courseId
         })
+
         return enrollMent;
     }
 }

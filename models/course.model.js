@@ -14,6 +14,10 @@ const CourseSchema = new mongoose.Schema({
         type: Number, 
         default: 0 
     },
+    enrolledCount: {
+        type:Number,
+        default:0
+    },
     author: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: "User" 

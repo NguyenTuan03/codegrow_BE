@@ -42,12 +42,12 @@ class UserController {
             metadata: await UserService.deleteUser(req.params)
         }).send(res)
     }
-    enrollCourse = async (req,res) => {
+    enrollCourse = async (req,res) => {        
         new CREATED({
             message: 'Enrollment successfully',
             metadata: await UserService.enrollCourse({
                 id: req.userId,
-                courseId: req.body})
+                courseId: req.body.courseId})
         }).send(res)
     }
 }
