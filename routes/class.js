@@ -205,4 +205,42 @@ router.patch('/:id/assign-mentor',
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.MENTOR]})),
     catchAsyncHandle(classController.assignMentor)
 )
+/**
+ * @swagger
+ * /classrooms/{id}/add-student:
+ *   patch:
+ *     summary: Admin adds a student to a classroom
+ *     tags: [Classrooms]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Classroom ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: User ID of the student to add
+ *     responses:
+ *       200:
+ *         description: Student added successfully
+ *       400:
+ *         description: User not found or already enrolled
+ */
+router.patch('/:id/add-student',
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
+    catchAsyncHandle(classController.addStudentsToClass)
+)
 module.exports = router;

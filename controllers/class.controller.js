@@ -50,5 +50,14 @@ class ClassroomController {
             })
         }).send(res)
     }
+    addStudentsToClass = async (req,res) => {
+        new OK({
+            message:'Student added to classroom successfully',
+            metadata: await ClassService.addStudentsToClass({
+                userId: req.body.userId,
+                id: req.params.id
+            })
+        }).send(res)
+    }
 }
 module.exports = new ClassroomController()
