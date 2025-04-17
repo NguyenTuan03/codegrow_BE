@@ -30,7 +30,8 @@ const ClassSchema = new mongoose.Schema({
     },
     students: [{ 
         type: mongoose.Schema.Types.ObjectId, 
-        ref: "User" 
+        ref: "User",
+        default:[]
     }],
     schedule: {
         startDate: { type: Date },

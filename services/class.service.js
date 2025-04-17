@@ -1,6 +1,7 @@
 const { NotFoundRequestError, BadRequestError } = require("../core/responses/error.response")
 const ClassroomModel = require("../models/Classroom.model")
 const CourseModel = require('../models/course.model')
+const userModel = require("../models/user.model")
 const { getAllClasses } = require("../repositories/class.repo")
 
 class ClassService {
@@ -136,6 +137,26 @@ class ClassService {
         await classroom.save()
 
         return classroom
+    }
+    static addStudentsToClass = async({userId,id}) => {
+        const classroom = await ClassroomModel.findById(id)
+        if (!classroom) throw new NotFoundRequestError('Classroom not found')
+        
+        const user = await userModel.findOne({
+            _id: userId,
+            role:'customer'
+        })
+        if (!user) throw new BadRequestError('User not found or not a student')
+        if (!Array.isArray(classroom.students)) {
+            classroom.students = [];
+        }
+        const alreadyAdded = classroom.students.includes(userId)
+        if (alreadyAdded) throw new BadRequestError('Student already in this class')
+
+        classroom.students.push(userId)
+        await classroom.save()
+
+        return classroom;
     }
     
 }
