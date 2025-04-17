@@ -177,4 +177,32 @@ router.delete('/:id',
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
     catchAsyncHandle(classController.deleteClassroom)
 )
+/**
+ * @swagger
+ * /classrooms/{id}/assign-mentor:
+ *   patch:
+ *     summary: Mentor accepts a class to teach
+ *     tags: [Classrooms]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Classroom ID
+ *     responses:
+ *       200:
+ *         description: Mentor assigned to class successfully
+ *       400:
+ *         description: Class already has a mentor
+ *       403:
+ *         description: Only mentors can perform this action
+ */
+router.patch('/:id/assign-mentor',
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.MENTOR]})),
+    catchAsyncHandle(classController.assignMentor)
+)
 module.exports = router;

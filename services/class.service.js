@@ -124,6 +124,19 @@ class ClassService {
         await existingClass.save();
             
     }
+    static assignMentor = async({mentorId,classId}) => {
+        const classroom = await ClassroomModel.findById(classId)
+        if (!classroom) throw new NotFoundRequestError('Classroom not found')
+
+        if (classroom.mentor) {
+            throw new BadRequestError('This class already has a mentor assigned')
+        }
+        classroom.mentor = mentorId
+        classroom.status = 'assigned'
+        await classroom.save()
+
+        return classroom
+    }
     
 }
 module.exports = ClassService
