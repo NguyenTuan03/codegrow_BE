@@ -14,7 +14,7 @@ const CourseSchema = new mongoose.Schema({
         type: Number, 
         default: 0 
     },
-    mentor: { 
+    author: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: "User" 
     },
