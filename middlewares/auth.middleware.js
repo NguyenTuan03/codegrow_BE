@@ -12,7 +12,7 @@ const AuthMiddleware = async (req,res,next) => {
         if (!authorization) {
             throw new UnauthorizedRequestError("Authorization header is required");
         }
-        console.log("authorization ",authorization);
+        
         const token = authorization.split(' ')[1];
         const {_id,role} = jwt.verify(
             token,

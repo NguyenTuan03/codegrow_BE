@@ -1,0 +1,129 @@
+const { NotFoundRequestError, BadRequestError } = require("../core/responses/error.response")
+const ClassroomModel = require("../models/Classroom.model")
+const CourseModel = require('../models/course.model')
+const { getAllClasses } = require("../repositories/class.repo")
+
+class ClassService {
+    static getAllClass = async({limit, sort, page, filter, select}) => {
+        return await getAllClasses({limit, sort, page, filter, select})
+    }
+    static getClassById = async({id}) => {
+        const classroom = await ClassroomModel.findOne({_id:id}).lean()
+        if (!classroom) throw new NotFoundRequestError('Classroom not found')
+        return classroom;
+    }
+    static createClassroom = async({title, courseId, description,maxStudents, schedule}) => {
+        const Isclassroom = await ClassroomModel.findOne({title}).lean();
+        if (Isclassroom) throw new BadRequestError('Class already exist')
+
+        const Iscourse = await CourseModel.findById(courseId).lean()
+        if (!Iscourse) throw new BadRequestError('Do not have this course in the system')
+
+        if (!Number.isInteger(maxStudents) || maxStudents <= 0 || maxStudents > 30) {
+            throw new BadRequestError("Class must have 1 to 30 students");
+        }
+
+        const { startDate, endDate, daysOfWeek, time } = schedule || {};
+        if (!startDate || !endDate || new Date(startDate) >= new Date(endDate)) {
+            throw new BadRequestError("Invalid start and end date");
+        }
+
+        if (!Array.isArray(daysOfWeek) || daysOfWeek.length === 0) {
+            throw new BadRequestError("Schedule must include at least one day of the week");
+        }
+    
+        if (!time || typeof time !== "string") {
+            throw new BadRequestError("Schedule time is required and must be a string");
+        }
+        const newClass = await ClassroomModel.create({
+            title,
+            course: courseId,
+            description,
+            maxStudents,
+            schedule
+        })
+
+        return newClass;
+    }
+    static updateClassroom = async({id,
+        title, 
+        courseId, 
+        description, 
+        maxStudents, 
+        schedule, 
+        status, 
+        mentor }) => {
+            
+            const existingClass = await ClassroomModel.findById(id);
+            if (!existingClass) throw new BadRequestError("Classroom not found");
+            
+            if (title && title !== existingClass.title) {
+                const titleExists = await ClassroomModel.findOne({ title });
+                if (titleExists) throw new BadRequestError("A class with this title already exists");
+                existingClass.title = title;
+            }
+            
+            if (courseId) {
+                const courseExists = await CourseModel.findById(courseId);
+                if (!courseExists) throw new BadRequestError("Course does not exist");
+                existingClass.course = courseId;
+            }
+            
+            if (mentor) {
+                const mentorExists = await UserModel.findOne({ _id: mentor, role: "mentor" });
+                if (!mentorExists) throw new BadRequestError("Invalid mentor");
+                existingClass.mentor = mentor;
+            }
+            
+            if (maxStudents !== undefined) {
+                if (!Number.isInteger(maxStudents) || maxStudents <= 0 || maxStudents > 30) {
+                    throw new BadRequestError("Class must have 1 to 30 students");
+                }
+                existingClass.maxStudents = maxStudents;
+            }
+            
+            if (schedule) {
+                const { startDate, endDate, daysOfWeek, time } = schedule;
+                if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
+                    throw new BadRequestError("Invalid start/end date");
+                }
+                if (daysOfWeek && (!Array.isArray(daysOfWeek) || daysOfWeek.length === 0)) {
+                    throw new BadRequestError("Invalid days of week");
+                }
+                if (time && typeof time !== "string") {
+                    throw new BadRequestError("Invalid time format");
+                }
+                existingClass.schedule = schedule;
+            }
+            
+            if (status) {
+                const allowedStatuses = ['open', 'assigned', 'in-progress', 'completed'];
+                if (!allowedStatuses.includes(status)) {
+                    throw new BadRequestError("Invalid class status");
+                }
+                existingClass.status = status;
+            }
+            
+            if (description !== undefined) {
+                existingClass.description = description;
+            }
+            await existingClass.save();
+            return existingClass;
+    }
+    static deleteClassroom = async({id}) => {
+        const existingClass = await ClassroomModel.findById(id);
+        if (!existingClass) {
+            throw new NotFoundError("Classroom not found");
+        }
+
+        if (existingClass.isDeleted) {
+            throw new BadRequestError("Classroom already deleted");
+        }
+            
+        existingClass.isDeleted = true;
+        await existingClass.save();
+            
+    }
+    
+}
+module.exports = ClassService
