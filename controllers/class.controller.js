@@ -41,5 +41,14 @@ class ClassroomController {
             metadata: await ClassService.deleteClassroom(req.params)
         }).send(res)
     }
+    assignMentor = async (req,res) => {
+        new OK({
+            message:'You have successfully taken this class',
+            metadata: await ClassService.assignMentor({
+                mentorId: req.userId,
+                classId: req.params.id
+            })
+        }).send(res)
+    }
 }
 module.exports = new ClassroomController()
