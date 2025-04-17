@@ -5,6 +5,6 @@ const classroom = require('./class')
 const routers = (app) => {  
   app.use('/auth', auth)
   app.use('/users', users)
-  app.use('/class', classroom)
+  app.use('/classrooms', classroom)
 }
 module.exports = routers;
