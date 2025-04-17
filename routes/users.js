@@ -138,6 +138,80 @@ router.delete('/:id',
     checkRoles({requiredRoles:[USER_ROLES.ADMIN]}),
     catchAsyncHandle(userController.deleteUser)
 )
+/**
+ * @swagger
+ * /users/enroll:
+ *   post:
+ *     summary: Enroll user in a course (wallet required)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - courseId
+ *             properties:
+ *               courseId:
+ *                 type: string
+ *                 description: ObjectId of the course to enroll
+ *     responses:
+ *       201:
+ *         description: User enrolled successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Enrollment successful
+ *                 status:
+ *                   type: number
+ *                   example: 201
+ *                 metadata:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       type: string
+ *                       example: "67fd1e9adee0b3e3595fe4c3"
+ *                     course:
+ *                       type: string
+ *                       example: "6800caf08ff7c88c32cfd7ed"
+ *                     progress:
+ *                       type: number
+ *                       example: 0
+ *                     completed:
+ *                       type: boolean
+ *                       example: false
+ *                     isDeleted:
+ *                       type: boolean
+ *                       example: false
+ *                     _id:
+ *                       type: string
+ *                       example: "680127a050c53e55d642b117"
+ *                     enrolledAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2025-04-17T16:09:04.705Z"
+ *                     __v:
+ *                       type: number
+ *                       example: 0
+ *       400:
+ *         description: Validation or business logic error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Insufficient balance to enroll in this course
+ */
+
 router.post('/enroll',
     catchAsyncHandle(AuthMiddleware),
     checkRoles({requiredRoles:[USER_ROLES.USER]}),
