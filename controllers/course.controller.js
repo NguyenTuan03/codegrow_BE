@@ -1,5 +1,5 @@
 const { FILTER_USER, SELECT_COURSE } = require('../configs/user.config')
-const { OK } = require('../core/responses/success.response')
+const { OK, CREATED, DELETED } = require('../core/responses/success.response')
 const CourseService = require('../services/course.service')
 class CourseController {
     getAllCourses = async (req,res) => {
@@ -13,6 +13,33 @@ class CourseController {
                 select: req.query.select || SELECT_COURSE.FULL,
                 expand: req.query.expand || ''
             })
+        }).send(res)
+    }
+    getCourseById = async (req,res) => {
+        new OK({
+            message:'Get course successfully',
+            metadata: await CourseService.getCourseById(req.params)
+        }).send(res)
+    }
+    createCourse = async (req,res) => {
+        new CREATED({
+            message: 'Create course successfully',
+            metadata: await CourseService.createCourse(req.body)
+        }).send(res)
+    }
+    updateCourse = async (req,res) => {
+        new OK({
+            message: 'Update course successfully',
+            metadata: await CourseService.updateCourse({
+                id: req.params.id,
+                ...req.body
+            })
+        }).send(res)   
+    }
+    deleteCourse = async (req,res) => {
+        new DELETED({
+            message: 'Delete course successfully',
+            metadata: await CourseService.deleteCourse(req.params)
         }).send(res)
     }
 }
