@@ -61,7 +61,7 @@ router.get('/:id',
  * @swagger
  * /course:
  *   post:
- *     summary: Create a new course
+ *     summary: Create a new course (ADMIN only)
  *     tags: [Courses]
  *     security:
  *       - bearerAuth: []
@@ -101,7 +101,7 @@ router.post('/',
  * @swagger
  * /course/{id}:
  *   put:
- *     summary: Update a course
+ *     summary: Update a course (ADMIN only)
  *     tags: [Courses]
  *     security:
  *       - bearerAuth: []
@@ -144,7 +144,7 @@ router.put('/:id',
  * @swagger
  * /course/{id}:
  *   delete:
- *     summary: Delete a course
+ *     summary: Delete a course (ADMIN only)
  *     tags: [Courses]
  *     security:
  *       - bearerAuth: []
