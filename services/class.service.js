@@ -71,7 +71,7 @@ class ClassService {
             }
             
             if (mentor) {
-                const mentorExists = await UserModel.findOne({ _id: mentor, role: "mentor" });
+                const mentorExists = await userModel.findOne({ _id: mentor, role: "mentor" });
                 if (!mentorExists) throw new BadRequestError("Invalid mentor");
                 existingClass.mentor = mentor;
             }
