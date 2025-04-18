@@ -1,3 +1,4 @@
+const { SELECT_COURSE, SELECT_USER } = require("../configs/user.config")
 const { NotFoundRequestError, BadRequestError } = require("../core/responses/error.response")
 const ClassroomModel = require("../models/Classroom.model")
 const CourseModel = require('../models/course.model')
@@ -5,11 +6,27 @@ const userModel = require("../models/user.model")
 const { getAllClasses } = require("../repositories/class.repo")
 
 class ClassService {
-    static getAllClass = async({limit, sort, page, filter, select}) => {
-        return await getAllClasses({limit, sort, page, filter, select})
+    static getAllClass = async({limit, sort, page, filter, select, expand}) => {
+        return await getAllClasses({limit, sort, page, filter, select, expand})
     }
     static getClassById = async({id}) => {
-        const classroom = await ClassroomModel.findOne({_id:id}).lean()
+        const classroom = await ClassroomModel
+            .findOne({_id:id})
+            .populate([
+                {
+                    path: 'mentor',
+                    select: SELECT_USER.DEFAULT
+                },
+                {
+                    path: 'course',
+                    select: SELECT_COURSE.FULL
+                },
+                {
+                    path: 'students',
+                    select: SELECT_USER.DEFAULT
+                }
+            ])
+            .lean()
         if (!classroom) throw new NotFoundRequestError('Classroom not found')
         return classroom;
     }

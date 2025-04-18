@@ -10,7 +10,8 @@ class CourseController {
                 sort: req.query.sort || 'ctime',
                 page: req.query.page || 1,
                 filter: req.query.filter ? JSON.parse(req.query.filter) : FILTER_USER.AVAILABLE_USER, 
-                select: req.query.select || SELECT_COURSE.DEFAULT
+                select: req.query.select || SELECT_COURSE.FULL,
+                expand: req.query.expand || ''
             })
         }).send(res)
     }

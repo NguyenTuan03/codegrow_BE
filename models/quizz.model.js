@@ -8,4 +8,4 @@ const QuestionSchema = new mongoose.Schema({
     explanation: { type: String },
     ...isDeleteSchema.obj
 });
-module.exports = mongoose.model('Quiz',QuestionSchema)
+module.exports = mongoose.model('Quizz',QuestionSchema)
