@@ -1,5 +1,5 @@
 const { FILTER_USER, SELECT_CLASS } = require("../configs/user.config")
-const { OK, CREATED } = require("../core/responses/success.response")
+const { OK, CREATED, DELETED } = require("../core/responses/success.response")
 const ClassService = require('../services/class.service')
 class ClassroomController {
     getAllClasses = async (req,res) => {
