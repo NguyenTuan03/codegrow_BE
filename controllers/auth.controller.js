@@ -49,6 +49,6 @@ class AuthController {
             message:'Reset password successfully',
             metadata:await AuthService.resetPass(req.body)
         }).send(res)
-    }
+    }    
 }
 module.exports = new AuthController()

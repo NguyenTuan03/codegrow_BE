@@ -211,7 +211,6 @@ router.delete('/:id',
  *                   type: string
  *                   example: Insufficient balance to enroll in this course
  */
-
 router.post('/enroll',
     catchAsyncHandle(AuthMiddleware),
     checkRoles({requiredRoles:[USER_ROLES.USER]}),

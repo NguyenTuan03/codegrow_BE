@@ -27,6 +27,12 @@ const userSchema = new mongoose.Schema(
             unique:true,
             trim:true
         },
+        enrolledCourses: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref:'Course'
+            }
+        ],
         password: {
             type:String,
             rquired: true
