@@ -10,6 +10,7 @@ const { USER_ROLES } = require('../configs/user.config')
 const CreateUserDTO = require('../core/dtos/users/create.user.dto')
 const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken')
+const enrollModel = require('../models/enroll.model')
 class AuthService {
     static logIn = async ({email,password}) => {
         if (!email || !password) throw new BadRequestError('Email and password are required')
@@ -239,5 +240,6 @@ class AuthService {
             throw new UnauthorizedRequestError('Invalid or expired token')
         }
     }
+    
 }
 module.exports = AuthService

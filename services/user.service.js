@@ -10,7 +10,10 @@ class UserService {
         return await getAllUsers({limit, sort, page, filter, select})
     }
     static getUserById = async({id}) => {
-        const user = await userModel.findOne({_id:id}).lean()
+        const user = await userModel.findOne({_id:id}).populate({
+            path:'enrolledCourses',
+            select: 'title description price author category'
+        })
         if (!user) {
             throw new NotFoundRequestError('User not found')
         }
@@ -71,13 +74,14 @@ class UserService {
             course: courseId
         })
         if (alreadyEnrolled) throw new BadRequestError('You already enroll this course')
+            
         const user = await userModel.findById(id);
-
         if (!user) throw new BadRequestError('You already enroll this course')
 
         if (user.wallet < course.price) throw new BadRequestError('Insufficient balance to enroll in this course')
-        
+                
         user.wallet -= course.price
+        user.enrolledCourses.push(courseId)
         await user.save()
 
         await courseModel.findByIdAndUpdate(courseId,{

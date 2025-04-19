@@ -41,6 +41,6 @@ class CourseController {
             message: 'Delete course successfully',
             metadata: await CourseService.deleteCourse(req.params)
         }).send(res)
-    }
+    }    
 }
 module.exports = new CourseController()
