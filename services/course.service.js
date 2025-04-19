@@ -1,6 +1,7 @@
 const { SELECT_USER } = require('../configs/user.config')
 const { BadRequestError } = require('../core/responses/error.response')
 const courseModel = require('../models/course.model')
+const enrollModel = require('../models/enroll.model')
 const {getAllCourses} = require('../repositories/course.repo')
 class CourseService {
     static getAllCourse = async({limit, sort, page, filter, select,expand}) => {
@@ -63,6 +64,25 @@ class CourseService {
             
         existingCourse.isDeleted = true;
         await existingCourse.save();
+    }
+    static getStudentsEnrolled = async({id}) => {
+        if (!id) throw new BadRequestError('CourseId is required')
+
+        const enrollment = await enrollModel.find({
+            course: id
+        }).populate({
+            path:'user',
+            select:SELECT_USER.DEFAULT
+        })
+
+        const students = enrollment
+            .map((enroll) => {
+                return enroll.user
+            })
+            .filter(Boolean)
+        
+        return students
+
     }
 }
 module.exports = CourseService

@@ -166,4 +166,7 @@ router.delete('/:id',
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
     catchAsyncHandle(courseController.deleteCourse)
 )
+router.get('/:id/students',
+    catchAsyncHandle(courseController.getStudentsEnrolled)
+)
 module.exports = router;

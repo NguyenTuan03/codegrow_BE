@@ -42,5 +42,11 @@ class CourseController {
             metadata: await CourseService.deleteCourse(req.params)
         }).send(res)
     }    
+    getStudentsEnrolled = async(req,res) => {
+        new OK({
+            message:'Get students of course successfully',
+            metadata: await CourseService.getStudentsEnrolled(req.params)
+        }).send(res)
+    }
 }
 module.exports = new CourseController()
