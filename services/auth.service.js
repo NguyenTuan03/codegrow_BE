@@ -240,6 +240,19 @@ class AuthService {
             throw new UnauthorizedRequestError('Invalid or expired token')
         }
     }
+    static ChangePassword = async({userId,oldPassword, newPassword}) => {
+      if (!oldPassword || !newPassword) throw new BadRequestError(!oldPassword ? 'Old password is required' : 'New Password is required')
+      const userPass = await UserModel.findById(userId)
+      console.log(userPass);
+      
+      const isPassword =await bcrypt.compare(oldPassword, userPass.password)
+      if (!isPassword) throw new BadRequestError('Old Password is wrong!')
+      if (isPassword) {
+        const passwordHash = await bcrypt.hash(newPassword, parseInt(process.env.PASSWORD_SALT))
+        userPass.password = passwordHash
+        await userPass.save()
+      }
+    }
     
 }
 module.exports = AuthService

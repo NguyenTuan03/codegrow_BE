@@ -11,6 +11,12 @@ const LessonSChema = new mongoose.Schema({
         type:String,
         required: true
     },
+    videoKey: {
+        type: String,        
+    },
+    videoUrl: {
+        type:String
+    },
     content: {
         type:String,
     },
