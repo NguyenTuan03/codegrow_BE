@@ -166,4 +166,26 @@ router.delete('/:id',
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
     catchAsyncHandle(courseController.deleteCourse)
 )
+/**
+ * @swagger
+ * /course/{id}/students:
+ *   get:
+ *     summary: Get list students by ID
+ *     tags: [Courses]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Course ID
+ *     responses:
+ *       200:
+ *         description: students found
+ *       404:
+ *         description: students not found
+ */
+router.get('/:id/students',
+    catchAsyncHandle(courseController.getStudentsEnrolled)
+)
 module.exports = router;
