@@ -50,5 +50,14 @@ class AuthController {
             metadata:await AuthService.resetPass(req.body)
         }).send(res)
     }    
+    async ChangePassword(req,res) {        
+        new OK({
+            message:'Change password successfully',
+            metadata:await AuthService.ChangePassword({
+                userId: req.userId,
+                ...req.body
+        })
+        }).send(res)
+    }
 }
 module.exports = new AuthController()

@@ -238,4 +238,53 @@ router.post('/forgot-password',
 router.post('/reset-password',
   catchAsyncHandle(authController.resetPassword)
 )
+/**
+ * @swagger
+ * /auth/change-password:
+ *   post:
+ *     summary: Change user password
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - oldPassword
+ *               - newPassword
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *                 example: oldPass123
+ *               newPassword:
+ *                 type: string
+ *                 example: newPass456
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Password updated
+ *       400:
+ *         description: Bad Request (missing fields or incorrect old password)
+ *       401:
+ *         description: Unauthorized (invalid or missing token)
+ *       500:
+ *         description: Server error
+ */
+router.post('/change-password',
+  catchAsyncHandle(AuthMiddleware),  
+  catchAsyncHandle(authController.ChangePassword)
+)
 module.exports = router;
