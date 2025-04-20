@@ -4,13 +4,14 @@ const courseModel = require('../models/course.model')
 const categoryModel = require('../models/category.model')
 const enrollModel = require('../models/enroll.model')
 const {getAllCourses} = require('../repositories/course.repo')
+const lessonModel = require('../models/lesson.model')
 class CourseService {
     static getAllCourse = async({limit, sort, page, filter, select,expand}) => {
         return await getAllCourses({limit, sort, page, filter, select, expand})
     }
     static getCourseById = async({id}) => {
         const classroom = await courseModel
-            .findOne({_id:id})
+            .findById(id)
             .populate([
                 {
                     path: 'author',
@@ -96,6 +97,13 @@ class CourseService {
         
         return students
 
+    }
+    getLessonsByCourse = async({courseId}) => {
+        const lessons = await lessonModel.find({
+            course: courseId,
+            isDeleted: false
+        }).sort({ order: 1 });
+        return lessons
     }
 }
 module.exports = CourseService

@@ -1,6 +1,6 @@
 var express = require('express');
-const { catchAsyncHandle } = require('../middlewares/error.middleware');
 var router = express.Router();
+const { catchAsyncHandle } = require('../middlewares/error.middleware');
 const CategoryController = require('../controllers/category.controller')
 /**
  * @swagger

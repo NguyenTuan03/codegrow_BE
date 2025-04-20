@@ -19,7 +19,7 @@ class AuthController {
         new CREATED({
             message:'New access token',
             metadata: await AuthService.refreshToken(req.cookies.refreshToken)
-        })
+        }).send(res)
     }
     async logInGoogle(req,res) {
         console.log(req.user);        

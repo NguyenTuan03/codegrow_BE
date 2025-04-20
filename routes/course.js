@@ -188,4 +188,24 @@ router.delete('/:id',
 router.get('/:id/students',
     catchAsyncHandle(courseController.getStudentsEnrolled)
 )
+/**
+ * @swagger
+ * /courses/{id}/lessons:
+ *   get:
+ *     summary: Get all lessons in a course
+ *     tags: [Courses]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Course ID
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of lessons
+ */
+router.get('/:id/lessons',
+    catchAsyncHandle(courseController.getLessonsByCourse)
+)
 module.exports = router;
