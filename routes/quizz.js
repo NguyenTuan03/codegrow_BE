@@ -172,7 +172,7 @@ router.delete('/:id',
 );
 /**
  * @swagger
- * /submission:
+ * /quizzes/submission:
  *   get:
  *     summary: Get latest submission by the authenticated user
  *     tags: [Submission]
