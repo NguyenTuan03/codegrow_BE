@@ -28,5 +28,13 @@ class quizzController {
             metadata: await QuizzService.deleteQuizz(req.params)
         }).send(res)
     }
+    getSubmission = async(req,res) => {
+        new OK({
+            message: 'get submission successfully',
+            metadata: await QuizzService.getSubmission({
+                userId: req.userId,                
+            })
+        }).send(res) 
+    }
 }
 module.exports = new quizzController()

@@ -106,5 +106,10 @@ class QuizzService{
       );
       if (!quiz) throw new BadRequestError('Quiz not found');
     }
+    static getSubmission = async({userId}) => {
+      const submissions = await submissionModel.find({ user: userId }).sort({ createdAt: -1 });
+      if (!submissions) throw new BadRequestError('This user do not submit anything')
+      return submissions
+    }
 }
 module.exports = QuizzService
