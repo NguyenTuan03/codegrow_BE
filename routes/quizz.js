@@ -170,4 +170,22 @@ router.delete('/:id',
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
     catchAsyncHandle(quizzController.deleteQuizz) 
 );
+/**
+ * @swagger
+ * /submission:
+ *   get:
+ *     summary: Get latest submission by the authenticated user
+ *     tags: [Submission]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Submission retrieved successfully
+ *       404:
+ *         description: No submission found for this user
+ */
+router.get('/submission',
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(quizzController.getSubmission)
+)
 module.exports = router
