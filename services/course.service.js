@@ -1,6 +1,7 @@
 const { SELECT_USER } = require('../configs/user.config')
 const { BadRequestError } = require('../core/responses/error.response')
 const courseModel = require('../models/course.model')
+const categoryModel = require('../models/category.model')
 const enrollModel = require('../models/enroll.model')
 const {getAllCourses} = require('../repositories/course.repo')
 class CourseService {
@@ -14,22 +15,29 @@ class CourseService {
                 {
                     path: 'author',
                     select: SELECT_USER.DEFAULT
-                }                
+                },
+                {
+                    path:'category',
+                    select: 'name'
+                }
             ])
             .lean()
         if (!classroom) throw new NotFoundRequestError('Course not found')
         return classroom;
     }
     static createCourse = async({title, description, price, author, category}) => {
-        if (!title || !description || !category) {
-            throw new BadRequestError('Missing any required fields: title, description, category')
+        if (!title || !description) {
+            throw new BadRequestError('Missing any required fields: title, description')
         }
+        const foundcategory = await categoryModel.findById(category)
+        if (!foundcategory) throw new BadRequestError('Missing category id')
+
         const newCourse = await courseModel.create({
             title,
             description,
             price: price || 0,
             author,
-            category
+            category:foundcategory._id
         });
         return newCourse;
     }
@@ -40,7 +48,12 @@ class CourseService {
         if (description !== undefined) updateData.description = description;
         if (price !== undefined) updateData.price = price;
         if (author !== undefined) updateData.author = author;
-        if (category !== undefined) updateData.category = category;
+
+        if (category !== undefined) {
+            const foundCategory = await categoryModel.findById(category);
+            if (!foundCategory) throw new BadRequestError('Invalid category ID');
+            updateData.category = foundCategory._id;
+        }
       
         const updatedCourse = await courseModel.findByIdAndUpdate(
           id,

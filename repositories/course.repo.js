@@ -8,6 +8,10 @@ const getAllCourses = async ({ limit, sort, page, filter, select,expand }) => {
         author: {
             path: 'author',
             select: SELECT_USER.DEFAULT
+        },
+        category: {
+            path: 'category',
+            select:'name'
         }
     }
     const populateFields = expand
