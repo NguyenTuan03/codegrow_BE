@@ -19,6 +19,7 @@
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
     "http-errors": "~1.6.3",
+    "isolated-vm": "^5.0.4",
     "jade": "~1.11.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",

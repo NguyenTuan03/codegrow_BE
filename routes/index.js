@@ -5,6 +5,7 @@ const courses = require('./course')
 const enroll = require('./enroll')
 const category = require('./category')
 const lesson = require('./lesson')
+const quizz = require('./quizz')
 const routers = (app) => {  
   app.use('/auth', auth)
   app.use('/users', users)
@@ -13,5 +14,6 @@ const routers = (app) => {
   app.use('/enroll', enroll)
   app.use('/category', category)
   app.use('/lesson',lesson)
+  app.use('/quizzes',quizz)
 }
 module.exports = routers;
