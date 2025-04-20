@@ -1,0 +1,110 @@
+const { BadRequestError } = require("../core/responses/error.response");
+const quizzModel = require("../models/quizz.model");
+const ivm = require('isolated-vm');
+const submissionModel = require("../models/submission.model");
+class QuizzService{
+    static createQuizz = async({
+        lesson, 
+        type, 
+        questionText, 
+        options, 
+        starterCode, 
+        expectedOutput, 
+        language, 
+        explanation, 
+        testCases}) => {
+        if (!lesson || !type || !questionText) {
+            throw new BadRequestError('Missing required fields');
+        }
+        const newQuiz = await quizzModel.create({
+            lesson,
+            type,
+            questionText,
+            options,
+            starterCode,
+            expectedOutput,
+            language,
+            explanation,
+            testCases
+        });
+        return newQuiz
+    }
+    static submitCode = async({quizId, code, userId}) => {
+        const quiz = await quizzModel.findById(quizId);
+        if (!quiz || quiz.type !== 'code') throw new BadRequestError('Invalid or non-code quiz');
+      
+        const results = [];
+        for (const test of quiz.testCases) {
+          const isolate = new ivm.Isolate({ memoryLimit: 8 });
+          const context = await isolate.createContext();
+          const jail = context.global;
+      
+          await jail.set('global', jail.derefInto());
+      
+          try {
+            const script = await isolate.compileScript(`
+              ${code}
+              if (typeof add !== 'function') throw new Error('Function add not found');
+              add(${test.input});
+            `);
+      
+            const result = await script.run(context, { timeout: 1000 });
+            const output = result?.toString();
+      
+            results.push({
+              input: test.input,
+              expected: test.expectedOutput,
+              output,
+              passed: output === test.expectedOutput
+            });
+          } catch (err) {
+            results.push({
+              input: test.input,
+              error: err.message,
+              passed: false
+            });
+          }
+        }
+        const isPassedAll = results.every(r => r.passed);
+
+        await submissionModel.create({
+            quiz: quizId,
+            user: userId,
+            code,
+            results,
+            isPassed: isPassedAll
+        });
+        return results
+    }
+    static updateQuiz = async({id,updates}) => {
+      const quiz = await quizzModel.findById(id);
+      if (!quiz) throw new BadRequestError('Quiz not found');
+
+      if (quiz.type === 'multiple_choice') {        
+        const allowedFields = ['questionText', 'options', 'explanation'];
+        Object.keys(updates).forEach(field => {
+          if (!allowedFields.includes(field)) delete updates[field];
+        });
+      }
+
+      if (quiz.type === 'code') {        
+        const allowedFields = ['questionText', 'starterCode', 'testCases', 'explanation', 'language'];
+        Object.keys(updates).forEach(field => {
+          if (!allowedFields.includes(field)) delete updates[field];
+        });
+      }
+      const updated = await quizzModel.findByIdAndUpdate(id, updates, {
+        new: true,
+        runValidators: true
+      });
+      return updated
+    }
+    static deleteQuizz = async({id}) => {
+      const quiz = await quizzModel.findByIdAndUpdate(id, 
+        { isDeleted: true }, 
+        { new: true }
+      );
+      if (!quiz) throw new BadRequestError('Quiz not found');
+    }
+}
+module.exports = QuizzService
