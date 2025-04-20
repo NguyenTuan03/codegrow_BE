@@ -28,6 +28,25 @@ const LessonSChema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Quiz'
     }],
+    status: {
+        type: String,
+        enum:['pending', 'done'],
+        default:'pending'
+    },
+    reviewedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'User'
+    },
+    reviewAt: {
+        type: Date        
+    },
+    reviewNote: {
+        type: String
+    },
+    mark: {
+        type:String,
+        enum:['A+','A','B','C','D']
+    },
     ...isDeleteSchema.obj
 }, {
     timestamps:true

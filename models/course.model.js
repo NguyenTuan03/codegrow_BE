@@ -23,8 +23,8 @@ const CourseSchema = new mongoose.Schema({
         ref: "User" 
     },
     category: { 
-        type: String, 
-        required: true 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref:'Category'
     },
     createdAt: { 
         type: Date,
