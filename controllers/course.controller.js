@@ -48,5 +48,12 @@ class CourseController {
             metadata: await CourseService.getStudentsEnrolled(req.params)
         }).send(res)
     }
+    getLessonsByCourse = async(req,res) => {
+        new OK({
+            message:'Get lesson by course successfully',
+            metadata: await CourseService.getLessonsByCourse(req.params)
+        }).send(res)
+    }
+
 }
 module.exports = new CourseController()

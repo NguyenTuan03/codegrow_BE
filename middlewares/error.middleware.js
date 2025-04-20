@@ -21,7 +21,6 @@ const catchAsyncHandle = (fn) => {
       next(error);
     } finally {
       session.endSession();
-
     }
   };
 };
