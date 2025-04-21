@@ -4,7 +4,7 @@ const courseModel = require("../models/course.model");
 const lessonModel = require("../models/lesson.model");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { SELECT_COURSE, SELECT_USER } = require("../configs/user.config");
-
+const s3 = require('../utils/s3client.util')
 class LessonService {
     static createLesson = async({
         course,
