@@ -114,7 +114,8 @@ class QuizzService{
     }    
     static getAllQuizzes = async({id}) => {
         const quizzes = await quizzModel.find({
-           lesson: id,            
+           lesson: id,
+           isDeleted:false
         }).sort({ order: 1 });        
                 
         if (!quizzes) throw new BadRequestError('Do not have any quizzes in this lesson')
