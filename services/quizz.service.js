@@ -77,24 +77,25 @@ class QuizzService{
         });
         return results
     }
-    static submitMultipleChoice = async({ userId, quizId, selectedOption }) => {
+    static submitMultipleChoice = async({ userId, quizId, selectedOptions }) => {
         const quiz = await quizzModel.findById(quizId);
-        if (!quiz) {
+
+        if (!quiz || quiz.type !== 'multiple_choice') {
           throw new BadRequestError('Invalid or non-multiple choice quiz');
-        }
+        }      
         
         const correctAnswers = quiz.options
           .filter(opt => opt.isCorrect)
           .map(opt => opt.text);
       
         const passed =
-          selectedOption.length === correctAnswers.length &&
-          selectedOption.every(opt => correctAnswers.includes(opt));
+          selectedOptions.length === correctAnswers.length &&
+          selectedOptions.every(opt => correctAnswers.includes(opt));
       
           await submissionModel.create({
             quiz: quizId,
             user: userId,
-            selectedOption,
+            selectedOptions,
             correctOptions: correctAnswers,
             isPassed: passed
           });
