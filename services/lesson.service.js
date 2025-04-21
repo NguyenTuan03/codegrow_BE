@@ -57,7 +57,8 @@ class LessonService {
         const command = new PutObjectCommand({
             Bucket: process.env.AWS_BUCKET_NAME,
             Key: key,
-            ContentType: fileType
+            ContentType: fileType,
+            ACL: 'public-read'
         });
 
         const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });

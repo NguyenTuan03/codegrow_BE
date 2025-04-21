@@ -98,11 +98,13 @@ class CourseService {
         return students
 
     }
-    static getLessonsByCourse = async({courseId}) => {
+    static getLessonsByCourse = async({id}) => {
+        console.log('id = ',id);
+        
         const lessons = await lessonModel.find({
-            course: courseId,
-            isDeleted: false
-        }).sort({ order: 1 });
+            course: id,            
+        }).sort({ order: 1 });        
+        
         if (!lessons) throw new BadRequestError('Do not have any lessons in this course')
         return lessons
     }
