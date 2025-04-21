@@ -50,5 +50,29 @@ class UserController {
                 courseId: req.body.courseId})
         }).send(res)
     }
+    lessonComplete = async (req,res) => {
+        new OK({
+            message:'mark lesson progress successfully',
+            metadata: await UserService.lessonComplete({
+                id:req.userId,
+                ...req.body
+            })
+        }).send(res)
+    }
+    quizzComplete = async (req,res) => {
+        new OK({
+            message:'mark quizz progress successfully',
+            metadata: await UserService.markQuizComplete({
+                id:req.userId,
+                ...req.body
+            })
+        }).send(res)
+    }
+    getProgress = async(req,res) => {
+        new OK({
+            message:"Get user's progress successfully",
+            metadata: await UserService.getUserProgress(req.params,req.query)
+        }).send(res)
+    }
 }
 module.exports = new UserController()
