@@ -68,12 +68,12 @@ class LessonService {
             publicUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`
         }
     }
-    static reviewLesson = async({lessonId,reviewerId,status, note, mark}) => {
+    static reviewLesson = async({id,reviewerId,status, note, mark}) => {
         if (!['pending', 'done'].includes(status)) {
             throw new BadRequestError('Invalid status');
         }
         const lesson = await lessonModel.findByIdAndUpdate(
-            lessonId,
+            id,
             {
               status,
               reviewedBy: reviewerId,
