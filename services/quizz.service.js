@@ -30,7 +30,7 @@ class QuizzService{
         });
         return newQuiz
     }
-    static submitCode = async({quizId, code, userId}) => {
+    static submitCode = async({userId,quizId, code}) => {
         const quiz = await quizzModel.findById(quizId);
         if (!quiz || quiz.type !== 'code') throw new BadRequestError('Invalid or non-code quiz');
       
@@ -76,6 +76,29 @@ class QuizzService{
             isPassed: isPassedAll
         });
         return results
+    }
+    static submitMultipleChoice = async({ quizId, userId, selectedOption }) => {
+        const quiz = await quizzModel.findById(quizId);
+        if (!quiz || quiz.type !== 'multiple_choice') {
+          throw new BadRequestError('Invalid or non-multiple choice quiz');
+        }
+        
+        const correct = quiz.options.find(opt => opt.isCorrect)?.text;
+      
+        const passed = selectedOption === correct;
+      
+        await submissionModel.create({
+          quiz: quizId,
+          user: userId,
+          selectedOption,
+          isPassed: passed,
+          correctOption: correct
+        });
+      
+        return {
+          passed,
+          correctOption: correct
+        };    
     }
     static updateQuiz = async({id,updates}) => {
       const quiz = await quizzModel.findById(id);
