@@ -33,7 +33,16 @@ class quizzController {
         new OK({
             message: 'get submission successfully',
             metadata: await QuizzService.getSubmission({
-                userId: req.userId,                
+                userId: req.userId
+            })
+        }).send(res) 
+    }
+    submitMultipleChoice = async(req,res) => {
+        new OK({
+            message: 'get submission successfully',
+            metadata: await QuizzService.submitMultipleChoice({
+                userId: req.userId,        
+                ...req.body        
             })
         }).send(res) 
     }
@@ -48,6 +57,6 @@ class quizzController {
                 message:'Get quizz successfully',
                 metadata: await QuizzService.getQuizzById(req.params)
             }).send(res)
-        }
+    }
 }
 module.exports = new quizzController()

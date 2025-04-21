@@ -63,9 +63,9 @@ router.post('/',
 )
 /**
  * @swagger
- * /quizzes/submit:
+ * /quizzes/submit/code:
  *   post:
- *     summary: Submit code answer and run test cases
+ *     summary: Submit a code quiz and run test cases
  *     tags: [Quiz]
  *     requestBody:
  *       required: true
@@ -83,10 +83,36 @@ router.post('/',
  *       200:
  *         description: Submission result
  */
-router.post('/submit',
+router.post('/submit/code',
+    catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(quizzController.submitCode)
 )
-
+/**
+ * @swagger
+ * /quizzes/submit/mc:
+ *   post:
+ *     summary: Submit code answer and run test cases
+ *     tags: [Quiz]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [quizId, selectedOption]
+ *             properties:
+ *               quizId:
+ *                 type: string
+ *               selectedOption:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Submission result
+ */
+router.post('/submit/mc',
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(quizzController.submitMultipleChoice)
+)
 /**
  * @swagger
  * /quizzes/{id}:
