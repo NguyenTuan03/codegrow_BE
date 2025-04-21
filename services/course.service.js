@@ -98,9 +98,7 @@ class CourseService {
         return students
 
     }
-    static getLessonsByCourse = async({id}) => {
-        console.log('id = ',id);
-        
+    static getLessonsByCourse = async({id}) => {        
         const lessons = await lessonModel.find({
             course: id,            
         }).sort({ order: 1 });        

@@ -39,15 +39,8 @@ class quizzController {
     }
     getAllQuizzes = async (req,res) => {
         new OK({
-            message:'Get all quizzes successfully',
-            metadata: await QuizzService.getAllQuizzes({
-                limit: req.query.limit || 1000,
-                sort: req.query.sort || 'ctime',
-                page: req.query.page || 1,
-                filter: req.query.filter ? JSON.parse(req.query.filter) : FILTER_USER.AVAILABLE_USER, 
-                select: req.query.select || '',
-                expand: req.query.expand || ''
-            })
+            message:'Get quizzes by lesson successfully',
+            metadata: await QuizzService.getAllQuizzes(req.params)
         }).send(res)
     }
     getQuizzById = async (req,res) => {
