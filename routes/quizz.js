@@ -103,8 +103,10 @@ router.post('/submit/code',
  *             properties:
  *               quizId:
  *                 type: string
- *               selectedOption:
- *                 type: string
+ *               selectedOptions:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
  *       200:
  *         description: Submission result
