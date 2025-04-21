@@ -73,7 +73,7 @@ class LessonService {
             throw new BadRequestError('Invalid status');
         }
         const lesson = await lessonModel.findByIdAndUpdate(
-            id,
+            lessonId,
             {
               status,
               reviewedBy: reviewerId,
