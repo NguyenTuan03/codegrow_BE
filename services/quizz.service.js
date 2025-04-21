@@ -1,7 +1,8 @@
-const { BadRequestError } = require("../core/responses/error.response");
+const { BadRequestError, NotFoundRequestError } = require("../core/responses/error.response");
 const quizzModel = require("../models/quizz.model");
 const ivm = require('isolated-vm');
 const submissionModel = require("../models/submission.model");
+const { getAllQuizzes } = require("../repositories/quizz.repo");
 class QuizzService{
     static createQuizz = async({
         lesson, 
@@ -110,6 +111,22 @@ class QuizzService{
       const submissions = await submissionModel.find({ user: userId }).sort({ createdAt: -1 });
       if (!submissions) throw new BadRequestError('This user do not submit anything')
       return submissions
+    }    
+    static getAllQuizzes = async({limit, sort, page, filter, select,expand}) => {
+      return await getAllQuizzes({limit, sort, page, filter, select, expand})
+    }
+    static getQuizzById = async({id}) => {
+            const quizz = await quizzModel
+                .findById(id)
+                .populate([
+                    {
+                        path: 'lesson',
+                        select: 'title videokey content'
+                    }
+                ])
+                .lean()
+            if (!quizz) throw new NotFoundRequestError('quizz not found')
+            return quizz;
     }
 }
 module.exports = QuizzService
