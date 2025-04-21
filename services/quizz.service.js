@@ -83,21 +83,25 @@ class QuizzService{
           throw new BadRequestError('Invalid or non-multiple choice quiz');
         }
         
-        const correct = quiz.options.find(opt => opt.isCorrect)?.text;
+        const correctAnswers = quiz.options
+          .filter(opt => opt.isCorrect)
+          .map(opt => opt.text);
       
-        const passed = selectedOption === correct;
+        const passed =
+          selectedOption.length === correctAnswers.length &&
+          selectedOption.every(opt => correctAnswers.includes(opt));
       
-        await submissionModel.create({
-          quiz: quizId,
-          user: userId,
-          selectedOption,
-          isPassed: passed,
-          correctOption: correct
-        });
+          await submissionModel.create({
+            quiz: quizId,
+            user: userId,
+            selectedOption,
+            correctOptions: correctAnswers,
+            isPassed: passed
+          });
       
         return {
           passed,
-          correctOption: correct
+          correctOptions: correctAnswers
         };    
     }
     static updateQuiz = async({id,updates}) => {
