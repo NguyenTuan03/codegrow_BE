@@ -24,7 +24,7 @@ class lessonController {
         new OK({
             message: 'Lesson reviewed successfully',
             metadata: await LessonService.reviewLesson({
-                lessonId: req.params,
+                id: req.params.id,
                 reviewerId:req.userId,
                 ...req.body
         })
