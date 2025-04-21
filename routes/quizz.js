@@ -188,4 +188,55 @@ router.get('/submission',
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(quizzController.getSubmission)
 )
-module.exports = router
+/**
+ * @swagger
+ * /quizzes:
+ *   get:
+ *     summary: Get all quizzes
+ *     tags: [Quiz]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page
+ *       - in: query
+ *         name: expand
+ *         schema:
+ *           type: string
+ *         description: Fields to populate (e.g., lesson)
+ *     responses:
+ *       200:
+ *         description: List of courses
+ */
+router.get('/',
+    catchAsyncHandle(quizzController.getAllQuizzes)
+)
+/**
+ * @swagger
+ * /quizzes/{id}:
+ *   get:
+ *     summary: Get a quizz by ID
+ *     tags: [Quiz]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Quizz ID
+ *     responses:
+ *       200:
+ *         description: Quizz found
+ *       404:
+ *         description: Quizz not found
+ */
+router.get('/:id',
+    catchAsyncHandle(quizzController.getQuizzById)
+)
+module.exports = router 

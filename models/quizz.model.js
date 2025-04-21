@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const isDeleteSchema = require("./isDelete.model");
+const { COLLECTION } = require("../configs/user.config");
 
 const QuestionSchema = new mongoose.Schema({
     lesson: { 
@@ -39,5 +40,7 @@ const QuestionSchema = new mongoose.Schema({
         type: String 
     },
     ...isDeleteSchema.obj
+},{
+    collection:COLLECTION.quizz
 });
 module.exports = mongoose.model('Quizz',QuestionSchema)

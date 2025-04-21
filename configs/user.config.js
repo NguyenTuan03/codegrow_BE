@@ -1,7 +1,8 @@
 const COLLECTION = {
     user: 'users',
     error: 'errors',
-    category: 'categories'
+    category: 'categories',
+    quizz:'quizzes'
 }
 const FILTER_USER = {
     AVAILABLE_USER: {
