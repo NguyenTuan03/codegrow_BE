@@ -7,7 +7,7 @@ const lessonController = require('../controllers/lesson.controller');
 var router = express.Router();
 /**
  * @swagger
- * /lessons:
+ * /lesson:
  *   post:
  *     summary: Create a new lesson
  *     tags: [Lesson]
@@ -76,7 +76,7 @@ router.post('/media/generate-upload-url',
 )
 /**
  * @swagger
- * /lessons/{id}:
+ * /lesson/{id}:
  *   get:
  *     summary: Get lesson by ID
  *     tags: [Lesson]
@@ -99,7 +99,7 @@ router.get('/:id',
 
 /**
  * @swagger
- * /lessons/{id}/review:
+ * /lesson/{id}/review:
  *   put:
  *     summary: Review and mark lesson by QA (QA only)
  *     tags: [Lesson]

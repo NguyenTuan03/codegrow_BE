@@ -26,7 +26,7 @@ const LessonSChema = new mongoose.Schema({
     },
     quiz: [{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Quiz'
+        ref:'Quizz'
     }],
     status: {
         type: String,

@@ -112,8 +112,13 @@ class QuizzService{
       if (!submissions) throw new BadRequestError('This user do not submit anything')
       return submissions
     }    
-    static getAllQuizzes = async({limit, sort, page, filter, select,expand}) => {
-      return await getAllQuizzes({limit, sort, page, filter, select, expand})
+    static getAllQuizzes = async({id}) => {
+        const quizzes = await quizzModel.find({
+           lesson: id,            
+        }).sort({ order: 1 });        
+                
+        if (!quizzes) throw new BadRequestError('Do not have any quizzes in this lesson')
+        return quizzes
     }
     static getQuizzById = async({id}) => {
             const quizz = await quizzModel

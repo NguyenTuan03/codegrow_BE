@@ -190,31 +190,22 @@ router.get('/submission',
 )
 /**
  * @swagger
- * /quizzes:
+ * /quizzes/{id}/lessons:
  *   get:
  *     summary: Get all quizzes
  *     tags: [Quiz]
  *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *         description: Page number
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *         description: Number of items per page
- *       - in: query
- *         name: expand
+ *       - in: path
+ *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         description: Fields to populate (e.g., lesson)
+ *         description: lesson ID
  *     responses:
  *       200:
  *         description: List of courses
  */
-router.get('/',
+router.get('/:id/lessons',
     catchAsyncHandle(quizzController.getAllQuizzes)
 )
 /**
