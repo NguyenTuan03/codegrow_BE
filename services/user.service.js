@@ -3,6 +3,7 @@ const { NotFoundRequestError, BadRequestError } = require("../core/responses/err
 const courseModel = require("../models/course.model")
 const enrollCourseModel = require('../models/enroll.model')
 const userModel = require("../models/user.model")
+const userProgressModel = require("../models/user.process.model")
 const { getAllUsers } = require("../repositories/user.repo")
 const bcrypt = require('bcrypt')
 class UserService {
@@ -96,6 +97,43 @@ class UserService {
         })
 
         return enrollMent;
+    }
+    static lessonComplete = async({id,lessonId, courseId}) => {
+        const progress = await userProgressModel.findOneAndUpdate(
+            {
+                user:id,
+                course:courseId
+            },
+            {
+                $addToSet: { completedLessons: lessonId },
+                $set: { lastLesson: lessonId, updatedAt: new Date() }
+            },
+            { new: true, upsert: true }
+        )
+        return progress;
+    }
+    static markQuizComplete = async({id,quizId, courseId}) => {
+        const progress = await userProgressModel.findOneAndUpdate(
+            { user: id, course: courseId },
+            {
+              $addToSet: { completedQuizzes: quizId },
+              $set: { updatedAt: new Date() }
+            },
+            { new: true, upsert: true }
+        );
+        return progress
+    }
+    static getUserProgress = async({id,courseId}) => {
+        const progress = await userProgressModel.findOne({ user: id, course: courseId });
+        const totalLessons = await lessonModel.countDocuments({ course: courseId });
+        const completedCount = progress?.completedLessons?.length || 0;
+        const percent = totalLessons > 0 ? Math.floor((completedCount / totalLessons) * 100) : 0;
+        return {
+            completedLessons: progress?.completedLessons || [],
+            completedQuizzes: progress?.completedQuizzes || [],
+            lastLesson: progress?.lastLesson || null,
+            progress: percent
+        }
     }
 }
 module.exports = UserService

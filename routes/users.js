@@ -216,4 +216,83 @@ router.post('/enroll',
     checkRoles({requiredRoles:[USER_ROLES.USER]}),
     catchAsyncHandle(userController.enrollCourse)
 )
+/**
+ * @swagger
+ * /users/progress/lesson-complete:
+ *   post:
+ *     summary: Mark a lesson as completed by the current user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [lessonId, courseId]
+ *             properties:
+ *               lessonId:
+ *                 type: string
+ *               courseId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Lesson marked as completed
+ */
+router.post('/progress/lesson-complete',
+    catchAsyncHandle(AuthMiddleware),    
+    catchAsyncHandle(userController.lessonComplete)
+)
+/**
+ * @swagger
+ * /users/progress/quiz-complete:
+ *   post:
+ *     summary: Mark a quiz as completed by the current user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [quizId, courseId]
+ *             properties:
+ *               quizId:
+ *                 type: string
+ *               courseId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Quiz marked as completed
+ */
+
+router.post('/progress/quizz-complete',
+    catchAsyncHandle(AuthMiddleware),    
+    catchAsyncHandle(userController.quizzComplete)
+)
+/**
+ * @swagger
+ * /users/{id}/progress:
+ *   get:
+ *     summary: Get progress of the authenticated user for a course
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Progress retrieved
+ */
+router.get('/:id/progress', 
+    catchAsyncHandle(AuthMiddleware),    
+    catchAsyncHandle(userController.getProgress)
+)
 module.exports = router;
