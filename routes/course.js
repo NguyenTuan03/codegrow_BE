@@ -190,7 +190,7 @@ router.get('/:id/students',
 )
 /**
  * @swagger
- * /courses/{id}/lessons:
+ * /course/{id}/lessons:
  *   get:
  *     summary: Get all lessons in a course
  *     tags: [Courses]
