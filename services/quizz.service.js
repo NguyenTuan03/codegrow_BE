@@ -79,7 +79,9 @@ class QuizzService{
     }
     static submitMultipleChoice = async({ userId, quizId, selectedOptions }) => {
         const quiz = await quizzModel.findById(quizId);
-
+        console.log('Quiz id:', quizId);
+        console.log('Quiz found:', quiz);
+        console.log('Quiz type:', quiz.type);
         if (!quiz || quiz.type !== 'multiple_choice') {
           throw new BadRequestError('Invalid or non-multiple choice quiz');
         }      
