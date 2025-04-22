@@ -249,6 +249,19 @@ router.post('/enroll-class',
 )
 /**
  * @swagger
+ * /users/enroll-class/pending:
+ *   get:
+ *     summary: Get list of users who have not been consulted
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: List of pending registrations
+ */
+router.get('enroll-class/pending',
+    catchAsyncHandle(userController.getListConsultedUser)
+)
+/**
+ * @swagger
  * /users/progress/lesson-complete:
  *   post:
  *     summary: Mark a lesson as completed by the current user

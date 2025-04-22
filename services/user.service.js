@@ -1,6 +1,7 @@
 const { USER_ROLES } = require("../configs/user.config")
 const { NotFoundRequestError, BadRequestError } = require("../core/responses/error.response")
 const courseModel = require("../models/course.model")
+const enrollModel = require("../models/enroll.model")
 const enrollCourseModel = require('../models/enroll.model')
 const lessonModel = require("../models/lesson.model")
 const userModel = require("../models/user.model")
@@ -24,6 +25,12 @@ class UserService {
             throw new NotFoundRequestError('User not found')
         }
         return user
+    }
+    static getConsultedUser = async() => {
+        const enroll = await enrollModel.find({
+            isConsulted:false
+        })
+        return enroll
     }
     static createUser = async({ fullName, email,password, role }) => {
         const user = await userModel.findOne({email}).lean()
@@ -106,7 +113,7 @@ class UserService {
     static enrollClass = async({id,fullName, email, phone, city, note}) => {
         if (!fullName || !email || !phone || !city || !note) throw new BadRequestError('All fields are required')
         const alreadyConsulted = await enrollCourseModel.findById(id)
-        if (alreadyConsulted) throw new BadRequestError('You have sent the consultant request!')
+        if (alreadyConsulted) throw new BadRequestError('You have sent the consultant request!')            
         const enrollMent = await enrollCourseModel.create({
             user:id,
             fullName,
