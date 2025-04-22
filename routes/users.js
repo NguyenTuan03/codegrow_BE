@@ -326,11 +326,18 @@ router.post('/progress/quizz-complete',
  *     security:
  *       - bearerAuth: []
  *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
  *       - in: query
  *         name: courseId
  *         required: true
  *         schema:
  *           type: string
+ *         description: Course ID to retrieve progress for
  *     responses:
  *       200:
  *         description: Progress retrieved
