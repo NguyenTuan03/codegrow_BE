@@ -103,6 +103,20 @@ class UserService {
 
         return enrollMent;
     }
+    static enrollClass = async({id,fullName, email, phone, city, note}) => {
+        if (!fullName || !email || !phone || !city || !note) throw new BadRequestError('All fields are required')
+        const alreadyConsulted = await enrollCourseModel.findById(id)
+        if (alreadyConsulted) throw new BadRequestError('You have sent the consultant request!')
+        const enrollMent = await enrollCourseModel.create({
+            user:id,
+            fullName,
+            email,
+            phone,
+            note,
+            isConsulted: false
+        })
+        return enrollMent
+    }
     static lessonComplete = async({id,lessonId, courseId}) => {
         const progress = await userProgressModel.findOneAndUpdate(
             {

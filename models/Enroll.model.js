@@ -22,6 +22,22 @@ const EnrollmentSchema = new mongoose.Schema({
          type: Date, 
          default: Date.now 
     },
+     fullName: { 
+          type: String 
+     },
+     email: { 
+          type: String 
+     },
+     phone: { 
+          type: String 
+     },
+     note: { 
+          type: String 
+     },
+     isConsulted: { 
+          type: Boolean, 
+          default: false 
+     },
     ...isDeleteSchema.obj
 });
 

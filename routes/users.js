@@ -217,6 +217,37 @@ router.post('/enroll',
     catchAsyncHandle(userController.enrollCourse)
 )
 /**
+ * @swagger 
+ * /users/enroll-class:
+ *   post:
+ *     summary: Submit student registration form for class consultation
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [fullName, email, phone, note]
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               note:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Form submitted successfully
+ */
+router.post('/enroll-class',
+    catchAsyncHandle(AuthMiddleware),
+    checkRoles({requiredRoles:[USER_ROLES.USER]}),
+    catchAsyncHandle(userController.enrollClass)
+)
+/**
  * @swagger
  * /users/progress/lesson-complete:
  *   post:
