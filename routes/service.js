@@ -9,7 +9,7 @@ var router = express.Router();
  * @swagger
  * /services/ticket:
  *   post:
- *     summary: User or mentor sends a support ticket/question to QAQC
+ *     summary: User or mentor sends a support ticket/question to QAQC (Customer or mentor)
  *     tags: [Service]
  *     security:
  *       - bearerAuth: []
@@ -44,7 +44,7 @@ router.post('/ticket',
  * @swagger
  * /services/ticket/{id}/reply:
  *   put:
- *     summary: QAQC replies to a user ticket
+ *     summary: QAQC replies to a user ticket (QAQC only)
  *     tags: [Service]
  *     security:
  *       - bearerAuth: []
@@ -106,7 +106,7 @@ router.get('/ticket',
  * @swagger
  * /services/ticket/mine:
  *   get:
- *     summary: Get responses of the authenticated user
+ *     summary: Get responses of the authenticated user (user or mentor)
  *     tags: [Service]
  *     security:
  *       - bearerAuth: []
