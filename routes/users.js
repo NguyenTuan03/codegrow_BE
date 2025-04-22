@@ -246,7 +246,7 @@ router.post('/progress/lesson-complete',
 )
 /**
  * @swagger
- * /users/progress/quiz-complete:
+ * /users/progress/quizz-complete:
  *   post:
  *     summary: Mark a quiz as completed by the current user
  *     tags: [Users]
