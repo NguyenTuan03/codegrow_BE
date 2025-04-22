@@ -8,7 +8,7 @@ const EnrollmentSchema = new mongoose.Schema({
      },
      course: {
           type: mongoose.Schema.Types.ObjectId, 
-          ref: "Course", required: true 
+          ref: "Course"
      },
      progress: {
           type: Number, 
