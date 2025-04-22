@@ -257,7 +257,7 @@ router.post('/enroll-class',
  *       200:
  *         description: List of pending registrations
  */
-router.get('enroll-class/pending',
+router.get('/enroll-class/pending',
     catchAsyncHandle(userController.getListConsultedUser)
 )
 /**
