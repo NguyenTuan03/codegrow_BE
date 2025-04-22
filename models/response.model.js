@@ -16,6 +16,10 @@ const ResponseSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId, 
             ref: "Course" 
         },
+        class: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Classroom"
+        },
         title: {
             type:String,
             required: true

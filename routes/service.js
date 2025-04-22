@@ -9,7 +9,7 @@ var router = express.Router();
  * @swagger
  * /services/ticket:
  *   post:
- *     summary: User or mentor sends a support ticket/question to QAQC (Customer or mentor)
+ *     summary: User or mentor sends a support ticket/question to QAQC
  *     tags: [Service]
  *     security:
  *       - bearerAuth: []
@@ -19,7 +19,7 @@ var router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [title, message, courseId]
+ *             required: [title, message]
  *             properties:
  *               title:
  *                 type: string
@@ -30,11 +30,14 @@ var router = express.Router();
  *               courseId:
  *                 type: string
  *                 example: "663c3c5af3a2a125684c1123"
+ *               classId:
+ *                 type: string
+ *                 example: "663c3d8b7a58d2131c1a9f10"
+ *             description: "Phải gửi courseId hoặc classId (ít nhất 1 trong 2)"
  *     responses:
  *       200:
  *         description: Ticket submitted successfully
  */
-
 router.post('/ticket',    
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.USER, USER_ROLES.MENTOR]})),
