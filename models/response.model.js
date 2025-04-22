@@ -16,6 +16,10 @@ const ResponseSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId, 
             ref: "Course" 
         },
+        title: {
+            type:String,
+            required: true
+        },
         message: { 
             type: String, 
             required: true 
@@ -28,6 +32,13 @@ const ResponseSchema = new mongoose.Schema(
         qaqcReply: { 
             type: String, 
             default: null 
+        },
+        replyAt: { 
+            type: Date 
+        },
+        repliedBy: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'User' 
         },
         ...isDeleteSchema.obj
     },
