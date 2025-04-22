@@ -15,6 +15,12 @@ class UserController {
             })
         }).send(res)
     }
+    getListConsultedUser = async (req,res) => {
+        new OK({
+            message:'Get list consulting user successfully',
+            metadata: await UserService.getConsultedUser()
+        }).send(res)
+    }
     getUserById = async (req,res) => {
         new OK({
             message:'Get user successfully',

@@ -2,6 +2,7 @@ const { SELECT_COURSE, SELECT_USER } = require("../configs/user.config")
 const { NotFoundRequestError, BadRequestError } = require("../core/responses/error.response")
 const ClassroomModel = require("../models/Classroom.model")
 const CourseModel = require('../models/course.model')
+const enrollModel = require("../models/enroll.model")
 const userModel = require("../models/user.model")
 const { getAllClasses } = require("../repositories/class.repo")
 
@@ -170,6 +171,9 @@ class ClassService {
         const alreadyAdded = classroom.students.includes(userId)
         if (alreadyAdded) throw new BadRequestError('Student already in this class')
 
+        const checkEnroll = await enrollModel.findById(userId)
+        checkEnroll.isConsulted = true
+        
         classroom.students.push(userId)
         await classroom.save()
 
