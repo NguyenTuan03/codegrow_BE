@@ -1,4 +1,4 @@
-const { USER_ROLES } = require("../configs/user.config")
+const { USER_ROLES, SELECT_USER } = require("../configs/user.config")
 const { NotFoundRequestError, BadRequestError } = require("../core/responses/error.response")
 const courseModel = require("../models/course.model")
 const enrollModel = require("../models/enroll.model")
@@ -29,7 +29,12 @@ class UserService {
     static getConsultedUser = async() => {
         const enroll = await enrollModel.find({
             isConsulted:false
-        })
+        }).populate([
+            {
+                path:'user',
+                select:SELECT_USER.DEFAULT
+            }
+        ])
         return enroll
     }
     static createUser = async({ fullName, email,password, role }) => {
