@@ -17,6 +17,12 @@ const CommentSchema = new mongoose.Schema(
             type: String, 
             required: true 
         },
+        rating: { 
+            type: Number, 
+            min: 1, 
+            max: 5, 
+            required: true 
+        },
         parentComment: { 
             type: mongoose.Schema.Types.ObjectId, 
             ref: "Comment", 

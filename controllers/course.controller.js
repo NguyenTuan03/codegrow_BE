@@ -54,6 +54,16 @@ class CourseController {
             metadata: await CourseService.getLessonsByCourse(req.params)
         }).send(res)
     }
+    createComment = async(req,res) => {
+        new CREATED({
+            message: 'Create a comment successfully',
+            metadata: await CourseService.createComment({
+                id: req.params.id,
+                userId: req.userId,
+                ...req.body
+            })
+        }).send(res)
+    }
 
 }
 module.exports = new CourseController()
