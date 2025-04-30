@@ -1,4 +1,4 @@
-const { SELECT_USER } = require('../configs/user.config')
+const { SELECT_USER, SELECT_COURSE } = require('../configs/user.config')
 const { BadRequestError } = require('../core/responses/error.response')
 const courseModel = require('../models/course.model')
 const categoryModel = require('../models/category.model')
@@ -26,6 +26,18 @@ class CourseService {
             .lean()
         if (!classroom) throw new NotFoundRequestError('Course not found')
         return classroom;
+    }
+    static getCommentsByCourseId = async({courseId}) => {
+        if (!courseId) throw new BadRequestError('CourseId is required')
+        const comments = await commentModel.find({
+            course: courseId,            
+        }).populate([            
+            {
+                path:'user',
+                select:SELECT_USER.DEFAULT
+            },            
+        ])
+        return comments
     }
     static createCourse = async({title, description, price, author, category}) => {
         if (!title || !description) {
@@ -108,9 +120,7 @@ class CourseService {
         return lessons
     }
     static createComment = async({id,userId,comment,rating,parentComment}) => {
-        if (!comment) throw new BadRequestError('Comment is required')
-        console.log(id,userId,comment,rating,parentComment);
-        
+        if (!comment) throw new BadRequestError('Comment is required')                
         const course = await courseModel.findById(id)
         if (!course) throw new BadRequestError('Course not found')
         const newComment = await commentModel.create({
