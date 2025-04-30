@@ -82,38 +82,35 @@ class UserService {
         )
         return user
     }
-    static enrollCourse = async ({id, courseId}) => {                
-        if (!courseId) throw new BadRequestError('CourseId is required')
-        const course = await courseModel.findById(courseId)
-        if (!course) throw new BadRequestError('Course not found')
+    static enrollCourse = async ({req,id, courseId, paymentMethod}) => {                
+        if (!courseId) throw new BadRequestError('CourseId is required');
+        if (!paymentMethod) throw new BadRequestError('Payment method is required');
+        
+        const course = await courseModel.findById(courseId);
+        if (!course) throw new BadRequestError('Course not found');
         
         const alreadyEnrolled = await enrollCourseModel.findOne({
             user: id,
             course: courseId
-        })
-        if (alreadyEnrolled) throw new BadRequestError('You already enroll this course')
-            
-        const user = await userModel.findById(id);
-        if (!user) throw new BadRequestError('You already enroll this course')
+        });
+        if (alreadyEnrolled) {
+            throw new BadRequestError('You already enrolled this course');
+        }
+        
+        const payService = require('./payment.service');
 
-        if (user.wallet < course.price) throw new BadRequestError('Insufficient balance to enroll in this course')
-                
-        user.wallet -= course.price
-        user.enrolledCourses.push(courseId)
-        await user.save()
+        const payLink = await payService.createPayment({
+            req,
+            amount: course.price,
+            userId: id,
+            courseId,
+            paymentMethod
+        });
 
-        await courseModel.findByIdAndUpdate(courseId,{
-            $inc: {
-                enrolledCount: 1
-            }
-        })
-
-        const enrollMent = await enrollCourseModel.create({
-            user: id,
-            course: courseId
-        })
-
-        return enrollMent;
+        return {
+            needPayment: true,
+            payUrl: payLink
+        };
     }
     static enrollClass = async({id,fullName, email, phone, city, note}) => {
         if (!fullName || !email || !phone || !city || !note) throw new BadRequestError('All fields are required')

@@ -7,6 +7,7 @@ const category = require('./category')
 const lesson = require('./lesson')
 const quizz = require('./quizz')
 const service = require('./service')
+const payment = require('./payment')
 const routers = (app) => {  
   app.use('/auth', auth)
   app.use('/users', users)
@@ -17,5 +18,6 @@ const routers = (app) => {
   app.use('/lesson',lesson)
   app.use('/quizzes',quizz)
   app.use('/services',service)
+  app.use('/payment',payment)
 }
 module.exports = routers;
