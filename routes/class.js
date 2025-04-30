@@ -247,7 +247,7 @@ router.patch('/:id/add-student',
  * @swagger
  * /classrooms/review/mentor:
  *   post:
- *     summary: QAQC writes a review for a mentor
+ *     summary: QAQC writes a review for a mentor (QAQC only)
  *     tags: [Classrooms]
  *     security:
  *       - bearerAuth: []
@@ -280,7 +280,7 @@ router.post('/review/mentor',
  * @swagger
  * /classrooms/review/mentor:
  *   get:
- *     summary: Get all mentors
+ *     summary: Get all mentors (QAQC only)
  *     tags: [Classrooms]
  *     parameters:
  *       - in: query
