@@ -19,12 +19,7 @@ class ClassroomController {
         new OK({
             message:'Get all mentors review successfully',
             metadata: await ClassService.getMentorReviews({
-                limit: req.query.limit || 1000,
-                sort: req.query.sort || 'ctime',
-                page: req.query.page || 1,
-                filter: req.query.filter ? JSON.parse(req.query.filter) : FILTER_USER.AVAILABLE_USER, 
-                select: req.query.select || '',
-                expand: req.query.expand || ''
+                qaqcId: req.userId,
             })
         }).send(res)
     }

@@ -11,8 +11,10 @@ class ClassService {
     static getAllClass = async({limit, sort, page, filter, select, expand}) => {
         return await getAllClasses({limit, sort, page, filter, select, expand})
     }
-    static getMentorReviews = async({limit, sort, page, filter, select, expand}) => {
-        return await getMentorReviews({limit, sort, page, filter, select, expand})
+    static getMentorReviews = async({qaqcId}) => {
+        return await qaqcreviewModel.find({ qaqc: qaqcId })
+            .populate('mentor', SELECT_USER.DEFAULT)
+            .sort({ createdAt: -1 });
     }
     static getClassById = async({id}) => {
         const classroom = await ClassroomModel
@@ -36,21 +38,9 @@ class ClassService {
         return classroom;
     }
     static getReviewById = async({id}) => {
-        const review = await qaqcreviewModel
-            .findOne({_id:id})
-            .populate([
-                {
-                    path: 'mentor',
-                    select: SELECT_USER.DEFAULT
-                },
-                {
-                    path: 'qaqc',
-                    select: SELECT_USER.DEFAULT
-                }                
-            ])
-            .lean()
-        if (!review) throw new NotFoundRequestError('review not found')
-        return review;
+        return await qaqcreviewModel.find({ mentor: id })
+            .populate('qaqc', SELECT_USER.DEFAULT)  
+            .sort({ createdAt: -1 });
     }
     static createClassroom = async({title, courseId, description,maxStudents, schedule}) => {
         const Isclassroom = await ClassroomModel.findOne({title}).lean();

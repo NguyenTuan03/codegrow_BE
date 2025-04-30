@@ -280,7 +280,7 @@ router.post('/review/mentor',
  * @swagger
  * /classrooms/review/mentor:
  *   get:
- *     summary: Get all mentors (QAQC only)
+ *     summary: Get all reviewed (QAQC only)
  *     tags: [Classrooms]
  *     parameters:
  *       - in: query
@@ -309,9 +309,9 @@ router.get('/review/mentor',
 )
 /**
  * @swagger
- * /classrooms/review/{id}/mentor:
+ * /classrooms/review/mentor/{id}:
  *   get:
- *     summary: Get a review by ID
+ *     summary: Get a review by Mentor ID 
  *     tags: [Classrooms]
  *     parameters:
  *       - in: path
@@ -319,14 +319,14 @@ router.get('/review/mentor',
  *         required: true
  *         schema:
  *           type: string
- *         description: review ID
+ *         description: Mentor ID
  *     responses:
  *       200:
  *         description: A Review found
  *       404:
  *         description: Review not found
  */
-router.get('/review/:id/mentor',        
+router.get('/review/mentor/:id',        
     catchAsyncHandle(classController.getReviewById)
 )
 module.exports = router;
