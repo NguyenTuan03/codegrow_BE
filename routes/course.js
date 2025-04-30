@@ -248,4 +248,26 @@ router.post('/:id/comment',
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.USER]})),
     catchAsyncHandle(courseController.createComment)
 )
+/**
+ * @swagger
+ * /course/{id}/comment:
+ *   get:
+ *     summary: Get comments by course ID
+ *     tags: [Courses]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Course ID
+ *     responses:
+ *       200:
+ *         description: Course found
+ *       404:
+ *         description: Course not found
+ */
+router.get('/:id/comment',
+    catchAsyncHandle(courseController.getCommentsByCourseId)
+)
 module.exports = router;

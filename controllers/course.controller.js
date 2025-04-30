@@ -15,6 +15,14 @@ class CourseController {
             })
         }).send(res)
     }
+    getCommentsByCourseId = async (req,res) => {
+        new OK({
+            message:'Get all comments of that course successfully',
+            metadata: await CourseService.getCommentsByCourseId({
+                courseId: req.params.id,
+            })
+        }).send(res)
+    }
     getCourseById = async (req,res) => {
         new OK({
             message:'Get course successfully',
