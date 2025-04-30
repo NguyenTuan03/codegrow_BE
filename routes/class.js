@@ -243,4 +243,68 @@ router.patch('/:id/add-student',
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
     catchAsyncHandle(classController.addStudentsToClass)
 )
+/**
+ * @swagger
+ * /classrooms/review/mentor:
+ *   post:
+ *     summary: QAQC writes a review for a mentor
+ *     tags: [Classrooms]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [mentorId, rating, comment]
+ *             properties:
+ *               mentorId:
+ *                 type: string
+ *               rating:
+ *                 type: number
+ *                 minimum: 1
+ *                 maximum: 5
+ *               comment:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Review created
+ */
+router.post('/review/mentor',
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.QAQC]})),
+    catchAsyncHandle(classController.reviewMentor)
+)
+/**
+ * @swagger
+ * /classrooms/review/mentor:
+ *   get:
+ *     summary: Get all mentors
+ *     tags: [Classrooms]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page
+ *       - in: query
+ *         name: expand
+ *         schema:
+ *           type: string
+ *         description: Fields to populate (e.g., author)
+ *     responses:
+ *       200:
+ *         description: List of courses
+ */
+router.get('/review/mentor',
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.QAQC]})),
+    catchAsyncHandle(classController.getMentorReviews)
+)
 module.exports = router;
