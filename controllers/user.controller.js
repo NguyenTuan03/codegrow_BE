@@ -52,8 +52,11 @@ class UserController {
         new CREATED({
             message: 'Course enrollment successfully',
             metadata: await UserService.enrollCourse({
+                req,
                 id: req.userId,
-                courseId: req.body.courseId})
+                courseId: req.body.courseId,
+                paymentMethod:req.body.paymentMethod
+            })
         }).send(res)
     }
     enrollClass = async(req,res) => {

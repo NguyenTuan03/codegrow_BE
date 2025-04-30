@@ -5,6 +5,7 @@ const categoryModel = require('../models/category.model')
 const enrollModel = require('../models/enroll.model')
 const {getAllCourses} = require('../repositories/course.repo')
 const lessonModel = require('../models/lesson.model')
+const commentModel = require('../models/comment.model')
 class CourseService {
     static getAllCourse = async({limit, sort, page, filter, select,expand}) => {
         return await getAllCourses({limit, sort, page, filter, select, expand})
@@ -105,6 +106,21 @@ class CourseService {
         
         if (!lessons) throw new BadRequestError('Do not have any lessons in this course')
         return lessons
+    }
+    static createComment = async({id,userId,comment,rating,parentComment}) => {
+        if (!comment) throw new BadRequestError('Comment is required')
+        console.log(id,userId,comment,rating,parentComment);
+        
+        const course = await courseModel.findById(id)
+        if (!course) throw new BadRequestError('Course not found')
+        const newComment = await commentModel.create({
+            course:id,
+            user:userId,
+            content:comment,
+            rating,
+            parentComment:parentComment || null,
+        })  
+        return newComment;  
     }
 }
 module.exports = CourseService

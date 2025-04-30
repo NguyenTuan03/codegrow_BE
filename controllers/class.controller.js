@@ -15,6 +15,25 @@ class ClassroomController {
             })
         }).send(res)
     }
+    getMentorReviews = async (req,res) => {
+        new OK({
+            message:'Get all mentors review successfully',
+            metadata: await ClassService.getMentorReviews({
+                limit: req.query.limit || 1000,
+                sort: req.query.sort || 'ctime',
+                page: req.query.page || 1,
+                filter: req.query.filter ? JSON.parse(req.query.filter) : FILTER_USER.AVAILABLE_USER, 
+                select: req.query.select || '',
+                expand: req.query.expand || ''
+            })
+        }).send(res)
+    }
+    getReviewById = async (req,res) => {
+        new OK({
+            message:'Get review successfully',
+            metadata: await ClassService.getReviewById(req.params)
+        }).send(res)
+    }
     getClassById = async (req,res) => {
         new OK({
             message:'Get class successfully',
@@ -57,6 +76,15 @@ class ClassroomController {
             metadata: await ClassService.addStudentsToClass({
                 userId: req.body.userId,
                 id: req.params.id
+            })
+        }).send(res)
+    }
+    reviewMentor = async (req,res) => {
+        new CREATED({
+            message: 'Review mentor successfully',
+            metadata: await ClassService.reviewMentor({                
+                qaqcId: req.userId,
+                ...req.body
             })
         }).send(res)
     }

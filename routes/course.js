@@ -208,4 +208,44 @@ router.get('/:id/students',
 router.get('/:id/lessons',
     catchAsyncHandle(courseController.getLessonsByCourse)
 )
+/**
+ * @swagger
+ * /course/{id}/comment:
+ *   post:
+ *     summary: Post a comment and rating for a course
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [comment, rating]
+ *             properties:
+ *               comment:
+ *                 type: string
+ *               rating:
+ *                 type: number
+ *                 minimum: 1
+ *                 maximum: 5
+ *               parentComment:
+ *                 type: string
+ *                 description: lấy id của comment cha đó nếu reply
+ *     responses:
+ *       201:
+ *         description: Comment posted
+ */
+router.post('/:id/comment',
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.USER]})),
+    catchAsyncHandle(courseController.createComment)
+)
 module.exports = router;

@@ -3,12 +3,16 @@ const { NotFoundRequestError, BadRequestError } = require("../core/responses/err
 const ClassroomModel = require("../models/Classroom.model")
 const CourseModel = require('../models/course.model')
 const enrollModel = require("../models/enroll.model")
+const qaqcreviewModel = require("../models/qaqcreview.model")
 const userModel = require("../models/user.model")
-const { getAllClasses } = require("../repositories/class.repo")
+const { getAllClasses, getMentorReviews } = require("../repositories/class.repo")
 
 class ClassService {
     static getAllClass = async({limit, sort, page, filter, select, expand}) => {
         return await getAllClasses({limit, sort, page, filter, select, expand})
+    }
+    static getMentorReviews = async({limit, sort, page, filter, select, expand}) => {
+        return await getMentorReviews({limit, sort, page, filter, select, expand})
     }
     static getClassById = async({id}) => {
         const classroom = await ClassroomModel
@@ -30,6 +34,23 @@ class ClassService {
             .lean()
         if (!classroom) throw new NotFoundRequestError('Classroom not found')
         return classroom;
+    }
+    static getReviewById = async({id}) => {
+        const review = await qaqcreviewModel
+            .findOne({_id:id})
+            .populate([
+                {
+                    path: 'mentor',
+                    select: SELECT_USER.DEFAULT
+                },
+                {
+                    path: 'qaqc',
+                    select: SELECT_USER.DEFAULT
+                }                
+            ])
+            .lean()
+        if (!review) throw new NotFoundRequestError('review not found')
+        return review;
     }
     static createClassroom = async({title, courseId, description,maxStudents, schedule}) => {
         const Isclassroom = await ClassroomModel.findOne({title}).lean();
@@ -178,6 +199,19 @@ class ClassService {
         await classroom.save()
 
         return classroom;
+    }
+    static reviewMentor = async({qaqcId,mentorId, rating, comment}) => {
+        if (!mentorId || !rating || !comment) {
+            throw new BadRequestError('Missing required fields');
+        }
+        
+        const review = await qaqcreviewModel.create({
+            mentor: mentorId,
+            qaqc: qaqcId,
+            rating,
+            comment
+        });
+        return review
     }
     
 }
