@@ -120,9 +120,7 @@ class CourseService {
         return lessons
     }
     static createComment = async({id,userId,comment,rating,parentComment}) => {
-        if (!comment) throw new BadRequestError('Comment is required')
-        console.log(id,userId,comment,rating,parentComment);
-        
+        if (!comment) throw new BadRequestError('Comment is required')                
         const course = await courseModel.findById(id)
         if (!course) throw new BadRequestError('Course not found')
         const newComment = await commentModel.create({

@@ -212,7 +212,7 @@ router.get('/:id/lessons',
  * @swagger
  * /course/{id}/comment:
  *   post:
- *     summary: Post a comment and rating for a course
+ *     summary: Post a comment (rating optional) for a course
  *     tags: [Courses]
  *     security:
  *       - bearerAuth: []
@@ -222,27 +222,32 @@ router.get('/:id/lessons',
  *         schema:
  *           type: string
  *         required: true
+ *         description: Course ID
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [comment, rating]
+ *             required: [comment] 
  *             properties:
  *               comment:
  *                 type: string
+ *                 example: "Khóa học rất chi tiết và dễ hiểu!"
  *               rating:
  *                 type: number
  *                 minimum: 1
  *                 maximum: 5
+ *                 example: 5
+ *                 description: Optional rating
  *               parentComment:
  *                 type: string
- *                 description: lấy id của comment cha đó nếu reply
+ *                 description: ID của comment cha nếu là reply
  *     responses:
  *       201:
  *         description: Comment posted
  */
+
 router.post('/:id/comment',
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.USER]})),
