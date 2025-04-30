@@ -300,11 +300,33 @@ router.post('/review/mentor',
  *         description: Fields to populate (e.g., author)
  *     responses:
  *       200:
- *         description: List of courses
+ *         description: List of reviews
  */
 router.get('/review/mentor',
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.QAQC]})),
     catchAsyncHandle(classController.getMentorReviews)
+)
+/**
+ * @swagger
+ * /classrooms/review/{id}/mentor:
+ *   get:
+ *     summary: Get a review by ID
+ *     tags: [Classrooms]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: review ID
+ *     responses:
+ *       200:
+ *         description: A Review found
+ *       404:
+ *         description: Review not found
+ */
+router.get('/review/:id/mentor',        
+    catchAsyncHandle(classController.getReviewById)
 )
 module.exports = router;

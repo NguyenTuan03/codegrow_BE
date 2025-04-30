@@ -28,6 +28,12 @@ class ClassroomController {
             })
         }).send(res)
     }
+    getReviewById = async (req,res) => {
+        new OK({
+            message:'Get review successfully',
+            metadata: await ClassService.getReviewById(req.params)
+        }).send(res)
+    }
     getClassById = async (req,res) => {
         new OK({
             message:'Get class successfully',

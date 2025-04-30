@@ -35,6 +35,23 @@ class ClassService {
         if (!classroom) throw new NotFoundRequestError('Classroom not found')
         return classroom;
     }
+    static getReviewById = async({id}) => {
+        const review = await qaqcreviewModel
+            .findOne({_id:id})
+            .populate([
+                {
+                    path: 'mentor',
+                    select: SELECT_USER.DEFAULT
+                },
+                {
+                    path: 'qaqc',
+                    select: SELECT_USER.DEFAULT
+                }                
+            ])
+            .lean()
+        if (!review) throw new NotFoundRequestError('review not found')
+        return review;
+    }
     static createClassroom = async({title, courseId, description,maxStudents, schedule}) => {
         const Isclassroom = await ClassroomModel.findOne({title}).lean();
         if (Isclassroom) throw new BadRequestError('Class already exist')
