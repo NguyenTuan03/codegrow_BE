@@ -52,7 +52,10 @@ class paymentService {
             const orderInfo = 'Thanh toan khoa hoc CodeGrow';
             const redirectUrl = MOMO.returnUrl;
             const ipnUrl = MOMO.notifyUrl;
-            const extraData = Buffer.from(JSON.stringify({ courseId, userId })).toString('base64');
+            const extraData = Buffer.from(
+              JSON.stringify({ userId, courseId }),
+              'utf8'
+            ).toString('base64');
             const requestType = 'payWithMethod';
             const autoCapture = true;
             const lang = 'vi';
@@ -74,20 +77,20 @@ class paymentService {
             .digest('hex');
 
             const requestBody = {
-            partnerCode: MOMO.partnerCode,
-            partnerName: 'CodeGrow Platform',
-            storeId: 'CodeGrowStore',
-            requestId,
-            amount: amount.toString(),
-            orderId,
-            orderInfo,
-            redirectUrl,
-            ipnUrl,
-            lang,
-            requestType,
-            autoCapture,
-            extraData,
-            signature
+              partnerCode: MOMO.partnerCode,
+              partnerName: 'CodeGrow Platform',
+              storeId: 'CodeGrowStore',
+              requestId,
+              amount: amount.toString(),
+              orderId,
+              orderInfo,
+              redirectUrl,
+              ipnUrl,
+              lang,
+              requestType,
+              autoCapture,
+              extraData,
+              signature
             };
 
             const response = await axios.post(MOMO.endpoint, requestBody, {
@@ -142,8 +145,7 @@ class paymentService {
       if (expectedSignature !== signature) {
         console.error('Sai chữ ký từ IPN');        
         throw new BadRequestError('Invalid signature')
-      }
-
+      }      
       // Step 2: Xử lý giao dịch
       if (resultCode === 0) {        
         console.log('Thanh toán MoMo thành công:');
