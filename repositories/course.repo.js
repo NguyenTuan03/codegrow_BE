@@ -1,5 +1,6 @@
 const { SELECT_COURSE, SELECT_USER } = require("../configs/user.config");
 const courseModel = require("../models/course.model");
+const lessonModel = require("../models/lesson.model");
 
 const getAllCourses = async ({ limit, sort, page, filter, select,expand }) => {
     const skip = (page - 1) * limit;
@@ -27,11 +28,21 @@ const getAllCourses = async ({ limit, sort, page, filter, select,expand }) => {
         .limit(limit)
         .select(select)
         .populate(populateFields)
-        
-    const totalCourses = await courseModel.countDocuments(filter);
+        .lean()
+    
+    const courseWithLessonCount = await Promise.all(
+        courses.map(async(course) => {
+            const count = await lessonModel.countDocuments({course: course._id})
+            return {
+                ...course,
+                lessons: count
+            }
+        })
+    )
+    const totalCourses = await courseModel.countDocuments(filter);    
     const totalPages = Math.ceil(totalCourses / limit);
     return {
-        courses,
+        courses: courseWithLessonCount,
         page: page,
         totalPages: totalPages,
     };
