@@ -32,7 +32,7 @@ const getAllCourses = async ({ limit, sort, page, filter, select,expand }) => {
     
     const courseWithLessonCount = await Promise.all(
         courses.map(async(course) => {
-            const count = await lessonModel.countDocuments({course: course._id})
+            const count = await lessonModel.countDocuments({course: course._id}).lean()
             return {
                 ...course,
                 lessons: count
