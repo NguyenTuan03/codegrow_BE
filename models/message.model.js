@@ -2,21 +2,22 @@ const { default: mongoose } = require("mongoose");
 
 const messageSchema = new mongoose.Schema(
     {
-        userId : {
+        senderId : {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true
         },
+        receiverId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required:true            
+        },
         content: {
             type: String,
         },
-        fileUrl: {
+        image: {
             type: String,
-        },
-        type: {
-            type: String,
-            default: "text",
-        },
+        },        
         createAt: {
             type: Date,
             default: Date.now,
