@@ -29,7 +29,7 @@ const getAllCourses = async ({ limit, sort, page, filter, select,expand }) => {
         .select(select)
         .populate(populateFields)
         .lean()
-    
+        
     const courseWithLessonCount = await Promise.all(
         courses.map(async(course) => {
             const count = await lessonModel.countDocuments({course: course._id}).lean()
@@ -41,6 +41,7 @@ const getAllCourses = async ({ limit, sort, page, filter, select,expand }) => {
     )
     const totalCourses = await courseModel.countDocuments(filter);    
     const totalPages = Math.ceil(totalCourses / limit);
+    console.log(typeof courseWithLessonCount);    
     return {
         courses: courseWithLessonCount,
         page: page,
