@@ -1,0 +1,7 @@
+{
+  "extends": ["config:base"],
+  "labels": ["dependencies"],
+  "prHourlyLimit": 2,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "schedule": ["after 9am every weekday", "before 5pm every weekday"]
+}
