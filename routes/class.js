@@ -86,6 +86,8 @@ router.get('/:id',
  *                       type: string
  *                   time:
  *                     type: string
+ *               linkMeet:
+ *                  type: string
  *     responses:
  *       201:
  *         description: Classroom created successfully
@@ -144,6 +146,8 @@ router.post('/',
  *                       type: string
  *                   time:
  *                     type: string
+ *               linkMeet:
+ *                  type: string
  *     responses:
  *       200:
  *         description: Classroom updated successfully

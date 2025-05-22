@@ -39,6 +39,9 @@ const ClassSchema = new mongoose.Schema({
         daysOfWeek: [{ type: String }], 
         time: { type: String } 
     },
+    linkMeet: {
+        type: String,
+    },
     ...isDeleteSchema.obj
 }, { timestamps: true });
 module.exports = mongoose.model('Classroom',ClassSchema)

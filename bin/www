@@ -11,7 +11,16 @@ const server = http.createServer(app);
 
 (async () => {
   try {
+    process.on('unhandledRejection', (reason, p) => {
+      console.error('🛑 Unhandled Rejection:', reason);
+    });
+    process.on('uncaughtException', (err) => {
+      console.error('🛑 Uncaught Exception:', err);
+    });
+    console.log("🟡 Starting app init...");
     await initApp();
+    console.log("🟢 App initialized. Starting server...");
+
 
     server.listen(port, host, () => {
       console.log(`✅ Server is listening on host ${host} port ${port}`);

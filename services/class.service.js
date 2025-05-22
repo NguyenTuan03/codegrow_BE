@@ -42,7 +42,7 @@ class ClassService {
             .populate('qaqc', SELECT_USER.DEFAULT)  
             .sort({ createdAt: -1 });
     }
-    static createClassroom = async({title, courseId, description,maxStudents, schedule}) => {
+    static createClassroom = async({title, courseId, description,maxStudents, schedule, linkMeet}) => {
         const Isclassroom = await ClassroomModel.findOne({title}).lean();
         if (Isclassroom) throw new BadRequestError('Class already exist')
 
@@ -52,6 +52,8 @@ class ClassService {
         if (!Number.isInteger(maxStudents) || maxStudents <= 0 || maxStudents > 30) {
             throw new BadRequestError("Class must have 1 to 30 students");
         }
+
+        if (!linkMeet) throw new BadRequestError("Please provide link meet");
 
         const { startDate, endDate, daysOfWeek, time } = schedule || {};
         if (!startDate || !endDate || new Date(startDate) >= new Date(endDate)) {
@@ -70,7 +72,8 @@ class ClassService {
             course: courseId,
             description,
             maxStudents,
-            schedule
+            schedule,
+            linkMeet
         })
 
         return newClass;
@@ -182,7 +185,17 @@ class ClassService {
         const alreadyAdded = classroom.students.includes(userId)
         if (alreadyAdded) throw new BadRequestError('Student already in this class')
 
-        const checkEnroll = await enrollModel.findById(userId)
+        if (
+            typeof classroom.maxStudents === 'number' &&
+            classroom.students.length >= classroom.maxStudents
+        ) {
+            throw new BadRequestError('Classroom has reached its maximum student capacity');
+        }
+        
+        const checkEnroll = await enrollModel.findOne({user: userId})
+        if (!checkEnroll) {
+         throw new BadRequestError('Enrollment not found for this student');
+        }
         checkEnroll.isConsulted = true
         
         classroom.students.push(userId)
