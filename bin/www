@@ -1,11 +1,10 @@
 #!/usr/bin/env node
-
+require('dotenv').config();
 const http = require('http');
 const debug = require('debug')('codegrow:server');
 const { app, initApp } = require('../app');
 
-const port = normalizePort(process.env.PORT || '3000');
-const host = '0.0.0.0';
+const port = normalizePort('3000');
 app.set('port', port);
 const server = http.createServer(app);
 
@@ -21,9 +20,8 @@ const server = http.createServer(app);
     await initApp();
     console.log("🟢 App initialized. Starting server...");
 
-
-    server.listen(port, host, () => {
-      console.log(`✅ Server is listening on host ${host} port ${port}`);
+    server.listen(port, () => {
+      console.log(`✅ Server is listening on port ${port}`);
     });
 
     server.on('error', onError);

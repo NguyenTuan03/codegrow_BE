@@ -170,7 +170,7 @@ class ClassService {
 
         return classroom
     }
-    static addStudentsToClass = async({userId,id}) => {
+    static addStudentsToClass = async({userId,id}) => {        
         const classroom = await ClassroomModel.findById(id)
         if (!classroom) throw new NotFoundRequestError('Classroom not found')
         
@@ -190,14 +190,18 @@ class ClassService {
             classroom.students.length >= classroom.maxStudents
         ) {
             throw new BadRequestError('Classroom has reached its maximum student capacity');
-        }
-        
+        }        
         const checkEnroll = await enrollModel.findOne({user: userId})
-        if (!checkEnroll) {
-         throw new BadRequestError('Enrollment not found for this student');
-        }
-        checkEnroll.isConsulted = true
         
+        if (!checkEnroll) {
+            throw new BadRequestError('Enrollment not found for this student');
+        }
+        console.log('Before save:', checkEnroll);
+        checkEnroll.isConsulted = true;
+        await checkEnroll.save();
+        console.log('After save:', await enrollModel.findById(checkEnroll._id));
+
+
         classroom.students.push(userId)
         await classroom.save()
 
