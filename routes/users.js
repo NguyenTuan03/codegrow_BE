@@ -238,6 +238,8 @@ router.post('/enroll',
  *                 type: string
  *               note:
  *                 type: string
+ *               city:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Form submitted successfully
