@@ -1,96 +1,101 @@
-const { FILTER_USER, SELECT_USER } = require("../configs/user.config")
-const { OK, CREATED, DELETED } = require("../core/responses/success.response")
-const UserService = require("../services/user.service")
+const { FILTER_USER, SELECT_USER } = require("../configs/user.config");
+const { OK, CREATED, DELETED } = require("../core/responses/success.response");
+const UserService = require("../services/user.service");
 
 class UserController {
-    getAllUsers = async (req,res) => {
+    getAllUsers = async (req, res) => {
         new OK({
-            message:'Get all users successfully',
+            message: "Get all users successfully",
             metadata: await UserService.getAllUser({
                 limit: req.query.limit || 1000,
-                sort: req.query.sort || 'ctime',
+                sort: req.query.sort || "ctime",
                 page: req.query.page || 1,
-                filter: req.query.filter ? JSON.parse(req.query.filter) : FILTER_USER.AVAILABLE_USER, 
-                select: req.query.select || SELECT_USER.DEFAULT
-            })
-        }).send(res)
-    }
-    getListConsultedUser = async (req,res) => {
+                filter: req.query.filter
+                    ? JSON.parse(req.query.filter)
+                    : FILTER_USER.AVAILABLE_USER,
+                select: req.query.select || SELECT_USER.DEFAULT,
+            }),
+        }).send(res);
+    };
+    getListConsultedUser = async (req, res) => {
         new OK({
-            message:'Get list consulting user successfully',
-            metadata: await UserService.getConsultedUser()
-        }).send(res)
-    }
-    getUserById = async (req,res) => {
+            message: "Get list consulting user successfully",
+            metadata: await UserService.getConsultedUser(),
+        }).send(res);
+    };
+    getUserById = async (req, res) => {
         new OK({
-            message:'Get user successfully',
-            metadata: await UserService.getUserById(req.params)
-        }).send(res)
-    }
-    createUser = async (req,res) => {
+            message: "Get user successfully",
+            metadata: await UserService.getUserById(req.params),
+        }).send(res);
+    };
+    createUser = async (req, res) => {
         new CREATED({
-            message: 'Create user successfully',
-            metadata: await UserService.createUser(req.body)
-        }).send(res)
-    }
-    updateUser = async (req,res) => {
+            message: "Create user successfully",
+            metadata: await UserService.createUser(req.body),
+        }).send(res);
+    };
+    updateUser = async (req, res) => {
         new OK({
-            message: 'Update user successfully',
+            message: "Update user successfully",
             metadata: await UserService.updateUser({
                 id: req.params.id,
-                ...req.body
-            })
-        }).send(res)
-    }
-    deleteUser = async (req,res) => {
+                fullName: req.body.fullName,
+                email: req.body.email,
+                role: req.body.role,
+                avatar: req.file,
+            }),
+        }).send(res);
+    };
+    deleteUser = async (req, res) => {
         new DELETED({
-            message: 'Delete user successfully',
-            metadata: await UserService.deleteUser(req.params)
-        }).send(res)
-    }
-    enrollCourse = async (req,res) => {        
+            message: "Delete user successfully",
+            metadata: await UserService.deleteUser(req.params),
+        }).send(res);
+    };
+    enrollCourse = async (req, res) => {
         new CREATED({
-            message: 'Course enrollment successfully',
+            message: "Course enrollment successfully",
             metadata: await UserService.enrollCourse({
                 req,
                 id: req.userId,
                 courseId: req.body.courseId,
-                paymentMethod:req.body.paymentMethod
-            })
-        }).send(res)
-    }
-    enrollClass = async(req,res) => {
+                paymentMethod: req.body.paymentMethod,
+            }),
+        }).send(res);
+    };
+    enrollClass = async (req, res) => {
         new CREATED({
-            message: 'Class enrollment successfully',
+            message: "Class enrollment successfully",
             metadata: await UserService.enrollClass({
                 id: req.userId,
-                ...req.body
-            })
-        }).send(res)
-    }
-    lessonComplete = async (req,res) => {
+                ...req.body,
+            }),
+        }).send(res);
+    };
+    lessonComplete = async (req, res) => {
         new OK({
-            message:'mark lesson progress successfully',
+            message: "mark lesson progress successfully",
             metadata: await UserService.lessonComplete({
-                id:req.userId,
-                ...req.body
-            })
-        }).send(res)
-    }
-    quizzComplete = async (req,res) => {
+                id: req.userId,
+                ...req.body,
+            }),
+        }).send(res);
+    };
+    quizzComplete = async (req, res) => {
         new OK({
-            message:'mark quizz progress successfully',
+            message: "mark quizz progress successfully",
             metadata: await UserService.markQuizComplete({
-                id:req.userId,
-                ...req.body
-            })
-        }).send(res)
-    }
-    getProgress = async(req,res) => {
+                id: req.userId,
+                ...req.body,
+            }),
+        }).send(res);
+    };
+    getProgress = async (req, res) => {
         new OK({
-            message:"Get user's progress successfully",
-            metadata: await UserService.getUserProgress(req.params,req.query)
-        }).send(res)
-    }
+            message: "Get user's progress successfully",
+            metadata: await UserService.getUserProgress(req.params, req.query),
+        }).send(res);
+    };
 }
-module.exports = new UserController()
+module.exports = new UserController();
