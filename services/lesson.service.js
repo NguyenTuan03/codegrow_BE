@@ -54,7 +54,7 @@ class LessonService {
         return lesson;
     };
     static uploadVideo = async ({ fileName, fileType }) => {
-        const key = `lessons/${Date.now()}-${fileName}`;
+        const key = `videos/${Date.now()}-${fileName}`;
 
         const command = uploadVideo({ key: key, fileType: fileType });
 
