@@ -42,6 +42,9 @@ const ClassSchema = new mongoose.Schema({
     linkMeet: {
         type: String,
     },
+    imgUrl: {
+        type: String,
+    },
     ...isDeleteSchema.obj
 }, { timestamps: true });
 module.exports = mongoose.model('Classroom',ClassSchema)

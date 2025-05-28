@@ -90,7 +90,7 @@ class CourseService {
         const newCourse = await courseModel.create({
             title,
             description,
-            priced: price || 0,
+            price: priced || 0,
             author,
             category: foundcategory._id,
             imgUrl,

@@ -5,6 +5,9 @@ var express = require('express');
 const { checkRoles } = require('../middlewares/role.middleware');
 const { USER_ROLES } = require('../configs/user.config');
 var router = express.Router();
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 /**
  * @swagger
  * /classrooms:
@@ -93,6 +96,7 @@ router.get('/:id',
  *         description: Classroom created successfully
  */
 router.post('/',
+    upload.single('imgUrl'),
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
     catchAsyncHandle(classController.createClassroom)
@@ -153,6 +157,7 @@ router.post('/',
  *         description: Classroom updated successfully
  */
 router.put('/:id',
+    upload.single('imgUrl'),
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
     catchAsyncHandle(classController.updateClassroom)
