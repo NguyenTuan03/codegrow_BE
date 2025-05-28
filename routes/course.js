@@ -139,6 +139,7 @@ router.post('/',
  *         description: Course not found
  */
 router.put('/:id',
+    upload.single('imgUrl'),
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
     catchAsyncHandle(courseController.updateCourse)

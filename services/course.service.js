@@ -63,9 +63,8 @@ class CourseService {
         description,
         price,
         author,
-        category
-    }) => {     
-        
+        category,
+    }) => {
         if (!title || !description) {
             throw new BadRequestError(
                 "Missing any required fields: title, description"
@@ -105,12 +104,13 @@ class CourseService {
         price,
         author,
         category,
+        imgUrl,
     }) => {
         const updateData = {};
 
         if (title !== undefined) updateData.title = title;
         if (description !== undefined) updateData.description = description;
-        if (price !== undefined) updateData.price = price;
+        if (price !== undefined) updateData.price = Number(price);
         if (author !== undefined) updateData.author = author;
 
         if (category !== undefined) {
@@ -119,7 +119,16 @@ class CourseService {
                 throw new BadRequestError("Invalid category ID");
             updateData.category = foundCategory._id;
         }
-
+        if (imgUrl && imgUrl.buffer && imgUrl.mimetype) {
+            const key = `courses/${uuidv4()}-${imgUrl.originalname}`;
+            const command = upload({
+                key: key,
+                body: imgUrl.buffer,
+                fileType: imgUrl.mimetype,
+            });
+            await s3.send(command);
+            updateData.imgUrl = createUrlS3(key);
+        }
         const updatedCourse = await courseModel.findByIdAndUpdate(
             id,
             updateData,

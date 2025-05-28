@@ -49,7 +49,12 @@ class CourseController {
             message: "Update course successfully",
             metadata: await CourseService.updateCourse({
                 id: req.params.id,
-                ...req.body,
+                title: req.body.title,
+                description: req.body.description,
+                price: req.body.price,
+                author: req.body.author,
+                category: req.body.category,
+                imgUrl: req.file
             }),
         }).send(res);
     };
