@@ -11,7 +11,7 @@ const userModel = require("../models/user.model");
 const userProgressModel = require("../models/user.process.model");
 const { getAllUsers } = require("../repositories/user.repo");
 const bcrypt = require("bcrypt");
-const { upload, s3 } = require("../utils/s3client");
+const { upload, s3, createUrlS3 } = require("../utils/s3client");
 const { v4: uuidv4 } = require("uuid");
 class UserService {
     static getAllUser = async ({ limit, sort, page, filter, select }) => {
@@ -80,7 +80,7 @@ class UserService {
             });
             await s3.send(command);
 
-            avatarUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+            avatarUrl = createUrlS3(key);
         }
 
         await userModel.updateOne(

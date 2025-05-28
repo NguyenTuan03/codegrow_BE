@@ -15,4 +15,7 @@ const upload = ({key, body, fileType}) => {
         ContentType: fileType,        
     });
 };
-module.exports = {s3, upload};
+const createUrlS3 = (key) => {
+    return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+}
+module.exports = {s3, upload, createUrlS3};
