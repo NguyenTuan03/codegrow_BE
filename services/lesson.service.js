@@ -3,7 +3,7 @@ const courseModel = require("../models/course.model");
 const lessonModel = require("../models/lesson.model");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { SELECT_COURSE, SELECT_USER } = require("../configs/user.config");
-const { upload } = require("../utils/s3client");
+const { upload, createUrlS3 } = require("../utils/s3client");
 class LessonService {
     static createLesson = async ({
         course,
@@ -65,7 +65,7 @@ class LessonService {
         return {
             uploadUrl,
             key,
-            publicUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`,
+            publicUrl: createUrlS3(key),
         };
     };
     static reviewLesson = async ({ id, reviewerId, status, note, mark }) => {

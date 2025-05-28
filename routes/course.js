@@ -5,7 +5,9 @@ const courseController = require('../controllers/course.controller');
 const AuthMiddleware = require('../middlewares/auth.middleware');
 const { checkRoles } = require('../middlewares/role.middleware');
 const { USER_ROLES } = require('../configs/user.config');
-
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 /**
  * @swagger
  * /course:
@@ -93,6 +95,7 @@ router.get('/:id',
  *         description: Missing required fields
  */
 router.post('/',
+    upload.single('imgUrl'),
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
     catchAsyncHandle(courseController.createCourse)
