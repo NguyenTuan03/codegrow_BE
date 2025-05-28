@@ -6,7 +6,7 @@ const enrollModel = require("../models/enroll.model");
 const { getAllCourses } = require("../repositories/course.repo");
 const lessonModel = require("../models/lesson.model");
 const commentModel = require("../models/comment.model");
-const { upload, s3, createUrlS3 } = require("../utils/s3client");
+const { s3, createUrlS3, uploadImage } = require("../utils/s3client");
 const { v4: uuidv4 } = require("uuid");
 class CourseService {
     static getAllCourse = async ({
@@ -78,7 +78,7 @@ class CourseService {
         }
         if (imgUrl && imgUrl.buffer && imgUrl.mimetype) {
             const key = `courses/${uuidv4()}-${imgUrl.originalname}`;
-            const command = upload({
+            const command = uploadImage({
                 key: key,
                 body: imgUrl.buffer,
                 fileType: imgUrl.mimetype,
@@ -121,7 +121,7 @@ class CourseService {
         }
         if (imgUrl && imgUrl.buffer && imgUrl.mimetype) {
             const key = `courses/${uuidv4()}-${imgUrl.originalname}`;
-            const command = upload({
+            const command = uploadImage({
                 key: key,
                 body: imgUrl.buffer,
                 fileType: imgUrl.mimetype,

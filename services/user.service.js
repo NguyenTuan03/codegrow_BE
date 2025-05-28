@@ -11,7 +11,7 @@ const userModel = require("../models/user.model");
 const userProgressModel = require("../models/user.process.model");
 const { getAllUsers } = require("../repositories/user.repo");
 const bcrypt = require("bcrypt");
-const { upload, s3, createUrlS3 } = require("../utils/s3client");
+const { s3, createUrlS3, uploadImage } = require("../utils/s3client");
 const { v4: uuidv4 } = require("uuid");
 class UserService {
     static getAllUser = async ({ limit, sort, page, filter, select }) => {
@@ -73,7 +73,7 @@ class UserService {
         }
         if (avatar && avatar.buffer && avatar.mimetype) {
             const key = `avatars/${uuidv4()}-${avatar.originalname}`;                        
-            const command = upload({
+            const command = uploadImage({
                 key: key, 
                 body: avatar.buffer, 
                 fileType: avatar.mimetype
