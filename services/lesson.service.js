@@ -3,7 +3,7 @@ const courseModel = require("../models/course.model");
 const lessonModel = require("../models/lesson.model");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { SELECT_COURSE, SELECT_USER } = require("../configs/user.config");
-const { upload, createUrlS3, s3 } = require("../utils/s3client");
+const { createUrlS3, s3, uploadVideo } = require("../utils/s3client");
 class LessonService {
     static createLesson = async ({
         course,
@@ -56,7 +56,7 @@ class LessonService {
     static uploadVideo = async ({ fileName, fileType }) => {
         const key = `lessons/${Date.now()}-${fileName}`;
 
-        const command = upload({ key: key, fileType: fileType });
+        const command = uploadVideo({ key: key, fileType: fileType });
 
         const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
         return {

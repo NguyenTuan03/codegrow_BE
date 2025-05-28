@@ -12,7 +12,7 @@ const {
     getAllClasses,
     getMentorReviews,
 } = require("../repositories/class.repo");
-const { upload, s3, createUrlS3 } = require("../utils/s3client");
+const { s3, createUrlS3, uploadImage } = require("../utils/s3client");
 const { v4: uuidv4 } = require("uuid");
 
 class ClassService {
@@ -116,7 +116,7 @@ class ClassService {
         }
         if (imgUrl && imgUrl.buffer && imgUrl.mimetype) {
             const key = `classrooms/${uuidv4()}-${imgUrl.originalname}`;
-            const command = upload({
+            const command = uploadImage({
                 key: key,
                 body: imgUrl.buffer,
                 fileType: imgUrl.mimetype,
@@ -227,7 +227,7 @@ class ClassService {
         }
         if (imgUrl && imgUrl.buffer && imgUrl.mimetype) {
             const key = `courses/${uuidv4()}-${imgUrl.originalname}`;
-            const command = upload({
+            const command = uploadImage({
                 key: key,
                 body: imgUrl.buffer,
                 fileType: imgUrl.mimetype,
