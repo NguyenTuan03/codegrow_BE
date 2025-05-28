@@ -19,8 +19,7 @@ const CourseSchema = new mongoose.Schema({
         default:0
     },
     author: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "User" 
+        type: String
     },
     category: { 
         type: mongoose.Schema.Types.ObjectId, 
@@ -29,6 +28,9 @@ const CourseSchema = new mongoose.Schema({
     createdAt: { 
         type: Date,
         default: Date.now
+    },
+    imgUrl: {
+        type: String
     },
     ...isDeleteSchema.obj
 });
