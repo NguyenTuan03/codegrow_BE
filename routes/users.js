@@ -5,6 +5,11 @@ const userController = require('../controllers/user.controller');
 const {checkRoles, checkUserOrAdmin} = require('../middlewares/role.middleware');
 const { USER_ROLES } = require('../configs/user.config');
 var router = express.Router();
+
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 /**
  * @swagger
  * tags:
@@ -109,6 +114,7 @@ router.post('/',
  *         description: Update user successfully
  */
 router.put('/:id',
+    upload.single('avatar'),
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(checkUserOrAdmin),
     catchAsyncHandle(userController.updateUser)
