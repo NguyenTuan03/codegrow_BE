@@ -12,7 +12,7 @@ class ClassroomController {
                 filter: req.query.filter
                     ? JSON.parse(req.query.filter)
                     : FILTER_USER.AVAILABLE_USER,
-                select: req.query.select || SELECT_CLASS.DEFAULT,
+                select: req.query.select || SELECT_CLASS.FULL,
                 expand: req.query.expand || "",
             }),
         }).send(res);

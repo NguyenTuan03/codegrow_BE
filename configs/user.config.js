@@ -19,7 +19,7 @@ const SELECT_USER = {
 }
 const SELECT_CLASS = {
     DEFAULT: 'title course description mentor students schedule',
-    FULL:'title course description mentor status maxStudents students schedule'
+    FULL:'title course description mentor status maxStudents students schedule linkMeet imgUrl'
 }
 const SELECT_COURSE = {
     FULL: 'title description price enrolledCount author category createdAt',    
