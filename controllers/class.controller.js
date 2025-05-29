@@ -63,6 +63,7 @@ class ClassroomController {
                 schedule: req.body.schedule,
                 status: req.body.status,
                 mentor: req.body.mentor,
+                linkMeet: req.body.linkMeet,
                 imgUrl: req.file
             }),
         }).send(res);
