@@ -146,6 +146,7 @@ class ClassService {
         schedule,
         status,
         mentor,
+        linkMeet,
         imgUrl
     }) => {
         const existingClass = await ClassroomModel.findById(id);
@@ -224,6 +225,9 @@ class ClassService {
 
         if (description !== undefined) {
             existingClass.description = description;
+        }
+        if (linkMeet !== undefined) {
+            existingClass.linkMeet = linkMeet;
         }
         if (imgUrl && imgUrl.buffer && imgUrl.mimetype) {
             const key = `courses/${uuidv4()}-${imgUrl.originalname}`;

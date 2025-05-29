@@ -22,7 +22,7 @@ const SELECT_CLASS = {
     FULL:'title course description mentor status maxStudents students schedule linkMeet imgUrl'
 }
 const SELECT_COURSE = {
-    FULL: 'title description price enrolledCount author category createdAt',    
+    FULL: 'title description price enrolledCount author category createdAt imgUrl',    
     DEFAULT: 'title description'
 }
 const USER_ROLES = {
