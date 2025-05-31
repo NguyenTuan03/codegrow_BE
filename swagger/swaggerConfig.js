@@ -6,7 +6,7 @@ const options = {
     info: {
       title: 'CODEGROW',
       version: '1.0.0',
-      description: 'NAM MÔ A DI ĐÀ PHẬT',      
+      description: 'NAM MÔ A DI ĐÀ PHẬT - XẢ XUI CỰC MẠNH',      
     },
     servers: [
       {

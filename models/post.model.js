@@ -1,4 +1,5 @@
 const { default: mongoose } = require("mongoose");
+const isDeleteSchema = require("./isDelete.model");
 
 const PostSchema = new mongoose.Schema(
     {
@@ -23,6 +24,7 @@ const PostSchema = new mongoose.Schema(
             },
         ],
         createdAt: { type: Date, default: Date.now },
+        ...isDeleteSchema.obj
     },
     {
         timestamps: true,
