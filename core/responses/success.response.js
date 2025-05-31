@@ -58,7 +58,7 @@ const StatusCode = {
     constructor({message, metadata}) {
       super({
         message,
-        status:StatusCode.CREATED,
+        status:StatusCode.OK,
         reason: ReasonStatusCode.DELETED,
         metadata,
       })

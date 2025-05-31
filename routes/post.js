@@ -10,7 +10,7 @@ const upload = multer({ storage });
 var router = express.Router();
 /**
  * @swagger
- * /posts:
+ * /post:
  *   post:
  *     summary: Tạo bài viết liên quan đến khóa học
  *     tags: [Posts]
@@ -67,4 +67,138 @@ router.post('/',
     catchAsyncHandle(checkRoles({requiredRoles: [USER_ROLES.MENTOR]})),
     catchAsyncHandle(postController.createPost)
 )
+/**
+ * @swagger
+ * /post/{postId}:
+ *   put:
+ *     summary: Update a post
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the post to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               course:
+ *                 type: string
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               attachments:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Post updated successfully
+ */
+
+router.put('/:postId',
+    upload.single('attachments'),
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(checkRoles({requiredRoles: [USER_ROLES.MENTOR]})),
+    catchAsyncHandle(postController.updatePost)
+);
+/**
+ * @swagger
+ * /post:
+ *   get:
+ *     summary: Get all posts
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of posts to return
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *         description: Field to sort by
+ *       - in: query
+ *         name: select
+ *         schema:
+ *           type: string
+ *         description: Fields to select
+ *       - in: query
+ *         name: expand
+ *         schema:
+ *           type: string
+ *         description: Fields to populate
+ *     responses:
+ *       200:
+ *         description: List of posts
+ */
+router.get('',
+    catchAsyncHandle(postController.getAllPosts)
+)
+/**
+ * @swagger
+ * /post/{postId}:
+ *   get:
+ *     summary: Get a post by ID
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the post
+ *     responses:
+ *       200:
+ *         description: Post details
+ */
+router.get('/:postId',
+    catchAsyncHandle(postController.getPostById)
+);
+/**
+ * @swagger
+ * /post/{postId}:
+ *   delete:
+ *     summary: Delete a post
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the post to delete
+ *     responses:
+ *       200:
+ *         description: Post deleted successfully
+ */
+
+router.delete('/:postId',
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(checkRoles({requiredRoles: [USER_ROLES.MENTOR]})),
+    catchAsyncHandle(postController.deletePost)
+);
 module.exports = router;
