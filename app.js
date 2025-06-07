@@ -4,8 +4,8 @@ const loaders = require('./loaders');
 
 const app = express();
 
-const initApp = async () => {
-  await loaders(app);
+const initApp = async (server) => {
+  await loaders(app, server);
 };
 
 module.exports = { app, initApp };

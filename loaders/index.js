@@ -1,7 +1,7 @@
 const databaseLoader = require("./database.loader");
 const middlewareLoader = require("./middleware.loader");
 const expressLoader = require('./express.loader');
-const setupSocket = require('./socket.loader')
+const {setupSocket} = require('./socket.loader')
 const routers = require("../routes");
 const { handleErrorResponse } = require("../utils/response");
 const errorResponse = require("./error.loader");

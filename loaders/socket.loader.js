@@ -1,36 +1,51 @@
-const socketIO = require("socket.io");
-const messageModel = require("../models/message.model");
+const { Server } = require("socket.io");
+
+const userSocketMap = {};
+
+let ioInstance = null;
 
 function setupSocket(server) {
   console.log("🚀 Initializing Socket.IO...");
 
-  const io = socketIO(server, {
+  const io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL || "http://localhost:3000", 
+      origin: "http://localhost:3000",
       methods: ["GET", "POST"],
       credentials: true,
     },
   });
 
-  global.io = io;
+  ioInstance = io;
 
   io.on("connection", (socket) => {
-    console.log("🟢 Socket connected:", socket.id);
-    socket.on('send_message', async(data) => {
+    console.log("✅ A user connected:", socket.id);
 
-      console.log("📩 Message received:", data);
-      const newMsg = new messageModel(data)
-      await newMsg.save();
+    const userId = socket.handshake.query.userId;
+    if (userId) {
+      userSocketMap[userId] = socket.id;
+      console.log("📌 userSocketMap updated:", userSocketMap);
+    }
 
-      io.emit('receive_message', newMsg);
-      console.log("📤 Message sent to all clients:", newMsg);
-    });
-    
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
     socket.on("disconnect", () => {
-      console.log("🔴 Socket disconnected:", socket.id);
+      console.log("❌ A user disconnected:", socket.id);
+
+      if (userId && userSocketMap[userId] === socket.id) {
+        delete userSocketMap[userId];
+      }
+
+      io.emit("getOnlineUsers", Object.keys(userSocketMap));
     });
   });
-  console.log("✅ Socket.IO setup complete!");
 }
 
-module.exports = setupSocket ;
+function getReceiverSocketId(userId) {
+  return userSocketMap[userId];
+}
+
+module.exports = {
+  setupSocket,
+  getReceiverSocketId,
+  getIo: () => ioInstance, 
+};
