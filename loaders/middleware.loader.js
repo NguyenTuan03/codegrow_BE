@@ -28,7 +28,7 @@ const middlewareLoader = (app) => {
     origin: process.env.CLIENT_URL,
     credentials:true,
     methods: ["GET","HEAD","PUT","PATCH","POST","DELETE"],
-    allowedHeaders: ["Content-type","Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization"]
   }));
   console.log("Middleware loaded");
 };

@@ -9,6 +9,7 @@ const quizz = require('./quizz')
 const service = require('./service')
 const payment = require('./payment')
 const post = require('./post')
+const message = require('./message')
 const routers = (app) => {  
   app.use('/auth', auth)
   app.use('/users', users)
@@ -21,5 +22,6 @@ const routers = (app) => {
   app.use('/services',service)
   app.use('/payment',payment)
   app.use('/post', post)
+  app.use('/message', message)
 }
 module.exports = routers;
