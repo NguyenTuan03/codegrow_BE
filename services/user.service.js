@@ -72,11 +72,11 @@ class UserService {
             throw new Error("Avatar file is missing or invalid");
         }
         if (avatar && avatar.buffer && avatar.mimetype) {
-            const key = `avatars/${uuidv4()}-${avatar.originalname}`;                        
+            const key = `avatars/${uuidv4()}-${avatar.originalname}`;
             const command = uploadImage({
-                key: key, 
-                body: avatar.buffer, 
-                fileType: avatar.mimetype
+                key: key,
+                body: avatar.buffer,
+                fileType: avatar.mimetype,
             });
             await s3.send(command);
 
@@ -180,14 +180,20 @@ class UserService {
         return progress;
     };
     static getUserProgress = async ({ id, courseId }) => {
-        const progress = await userProgressModel.findOne({
-            user: id,
-            course: courseId,
-        });
+        const progress = await userProgressModel
+            .findOne({
+                user: id,
+                course: courseId,
+            })
+            .populate("completedLessons")
+            .populate("completedQuizzes")
+            .populate("lastLesson");
+        console.log(progress);
         const totalLessons = await lessonModel.countDocuments({
             course: courseId,
         });
         const completedCount = progress?.completedLessons?.length || 0;
+        console.log(completedCount, totalLessons);
         const percent =
             totalLessons > 0
                 ? Math.floor((completedCount / totalLessons) * 100)

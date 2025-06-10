@@ -94,7 +94,10 @@ class UserController {
     getProgress = async (req, res) => {
         new OK({
             message: "Get user's progress successfully",
-            metadata: await UserService.getUserProgress(req.params, req.query),
+            metadata: await UserService.getUserProgress({
+                id: req.userId,
+                ...req.body
+            }),
         }).send(res);
     };
 }
