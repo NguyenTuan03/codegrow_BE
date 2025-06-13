@@ -5,6 +5,9 @@ const { checkRoles } = require('../middlewares/role.middleware');
 const { USER_ROLES } = require('../configs/user.config');
 const lessonController = require('../controllers/lesson.controller');
 var router = express.Router();
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 /**
  * @swagger
  * /lesson:
@@ -43,6 +46,7 @@ var router = express.Router();
  *         description: Lesson created successfully
  */
 router.post('/',
+    upload.single('video'),
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
     catchAsyncHandle(lessonController.createLesson)

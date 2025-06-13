@@ -7,22 +7,23 @@ const s3 = new S3Client({
         secretAccessKey: process.env.AWS_SECRET_KEY,
     },
 });
-const uploadImage = ({key, body, fileType}) => {
+const uploadImage = ({ key, body, fileType }) => {
     return new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: key,
         Body: body || null,
-        ContentType: fileType,        
+        ContentType: fileType,
     });
 };
-const uploadVideo = ({key, fileType}) => {
+const uploadVideo = ({ key, body, fileType }) => {
     return new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: key,        
-        ContentType: fileType,        
+        Key: key,
+        Body: body,
+        ContentType: fileType,
     });
 };
 const createUrlS3 = (key) => {
     return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
-}
-module.exports = {s3, uploadImage, uploadVideo, createUrlS3};
+};
+module.exports = { s3, uploadImage, uploadVideo, createUrlS3 };
