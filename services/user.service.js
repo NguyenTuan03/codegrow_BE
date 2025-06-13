@@ -68,9 +68,7 @@ class UserService {
         if (!user) throw new NotFoundRequestError("User not found");
 
         let avatarUrl = user.avatar;
-        if (!avatar || !avatar.originalname) {
-            throw new Error("Avatar file is missing or invalid");
-        }
+
         if (avatar && avatar.buffer && avatar.mimetype) {
             const key = `avatars/${uuidv4()}-${avatar.originalname}`;
             const command = uploadImage({
