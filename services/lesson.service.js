@@ -12,6 +12,7 @@ class LessonService {
         content,
         order,
         quiz,
+        free_url,
         video,
     }) => {
         if (!course || !title || order === undefined) {
@@ -39,6 +40,7 @@ class LessonService {
             content,
             order,
             quiz,
+            free_url
         });
         return newLesson;
     };
