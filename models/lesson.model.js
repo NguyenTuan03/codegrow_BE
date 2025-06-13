@@ -43,6 +43,9 @@ const LessonSChema = new mongoose.Schema({
     reviewNote: {
         type: String
     },
+    free_url: {
+        type: string
+    },
     mark: {
         type:String,
         enum:['A+','A','B','C','D']
