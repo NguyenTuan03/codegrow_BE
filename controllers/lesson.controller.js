@@ -11,6 +11,7 @@ class lessonController {
                 content: req.body.content,
                 order: req.body.order,
                 quiz: req.body.quiz,
+                 free_url: req.body.free_url,
                 video: req.file,
             }),
         }).send(res);
