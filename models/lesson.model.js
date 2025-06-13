@@ -44,7 +44,7 @@ const LessonSChema = new mongoose.Schema({
         type: String
     },
     free_url: {
-        type: string
+        type: String
     },
     mark: {
         type:String,
