@@ -4,15 +4,15 @@ const lessonModel = require("../models/lesson.model");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { SELECT_COURSE, SELECT_USER } = require("../configs/user.config");
 const { createUrlS3, s3, uploadVideo } = require("../utils/s3client");
+const { v4: uuidv4 } = require("uuid");
 class LessonService {
     static createLesson = async ({
         course,
         title,
-        videoKey,
-        videoUrl,
         content,
         order,
         quiz,
+        video,
     }) => {
         if (!course || !title || order === undefined) {
             throw new BadRequestError(
@@ -21,11 +21,21 @@ class LessonService {
         }
         const courseExists = await courseModel.findById(course);
         if (!courseExists) throw new BadRequestError("Course not found");
+
+        const key = `lessons/${Date.now()}-${uuidv4()}-${video.originalname}`;
+        const command = uploadVideo({
+            key,
+            fileType: video.mimetype,
+            body: video.buffer,
+        });
+        await s3.send(command);
+        const publicUrl = createUrlS3(key);
+
         const newLesson = await lessonModel.create({
             course,
             title,
-            videoKey,
-            videoUrl,
+            videoKey: key,
+            videoUrl: publicUrl,
             content,
             order,
             quiz,
