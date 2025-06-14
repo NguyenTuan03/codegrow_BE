@@ -12,4 +12,7 @@ var router = express.Router();
 router.post('/momo/ipn',
     catchAsyncHandle(paymentController.momoIpn)
 )
+router.get('/create-payment-url', 
+    catchAsyncHandle(paymentController.vnPay)
+)
 module.exports = router;

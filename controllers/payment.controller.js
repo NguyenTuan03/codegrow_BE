@@ -1,5 +1,5 @@
-const { CREATED, OK } = require("../core/responses/success.response")
-const paymentService = require('../services/payment.service')
+const { CREATED, OK } = require("../core/responses/success.response");
+const paymentService = require("../services/payment.service");
 class paymentController {
     // createVNpay = async(req,res) => {
     //     new CREATED({
@@ -16,11 +16,21 @@ class paymentController {
     //         return res.redirect('/payment-fail');
     //     }
     // }
-    momoIpn = async(req,res) => {
+    momoIpn = async (req, res) => {
         new OK({
-            message: 'Response momo successfully',
-            metadata: await paymentService.momoIpn(req.body)
-        }).send(res)  
-    }
+            message: "Response momo successfully",
+            metadata: await paymentService.momoIpn(req.body),
+        }).send(res);
+    };
+    vnPay = async (req, res) => {
+        new OK({
+            message: "Response vnpay sucessfully",
+            metadata: await paymentService.vnpay({
+                ipAddr: '127.0.0.1',
+                amount: req.query.amount,
+                orderId: req.query.orderId,
+            }),
+        }).send(res);
+    };
 }
 module.exports = new paymentController();
