@@ -23,7 +23,7 @@ class LessonService {
         const courseExists = await courseModel.findById(course);
         if (!courseExists) throw new BadRequestError("Course not found");
 
-        const key = `lessons/${Date.now()}-${uuidv4()}-${video.originalname}`;
+        const key = `lessons/${Date.now()}-${uuidv4()}-${video?.originalname}`;
         const command = uploadVideo({
             key,
             fileType: video.mimetype,
