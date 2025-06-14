@@ -26,8 +26,8 @@ class LessonService {
         const key = `lessons/${Date.now()}-${uuidv4()}-${video?.originalname}`;
         const command = uploadVideo({
             key,
-            fileType: video.mimetype,
-            body: video.buffer,
+            fileType: video?.mimetype,
+            body: video?.buffer,
         });
         await s3.send(command);
         const publicUrl = createUrlS3(key);
