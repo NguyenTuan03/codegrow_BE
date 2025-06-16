@@ -246,13 +246,10 @@ class paymentService {
             const courseId = vnp_Params["vnp_TxnRef"];
             const orderInfo = vnp_Params["vnp_OrderInfo"];
             const userId = extractUserIdFromOrderInfo(orderInfo);
-            console.log(userId)
+            console.log(orderInfo, userId);
             if (!mongoose.Types.ObjectId.isValid(userId)) {
                 throw new BadRequestError("Invalid userId in order info");
             }
-
-            console.log("✅ OrderInfo:", orderInfo);
-            console.log("✅ Extracted userId:", userId);
 
             const alreadyEnrolled = await enrollCourseModel.findOne({
                 user: userId,
@@ -269,10 +266,9 @@ class paymentService {
                     $inc: { enrolledCount: 1 },
                 });
             }
-
-            return `http://localhost:3000/payment/success?courseId=${courseId}`;
+            return "http://localhost:3000/payment/vnpay/success";
         } else {
-            return "http://localhost:3000/payment/failure";
+            return "http://localhost:3000/payment/vnpay/failure";
         }
     };
 }
