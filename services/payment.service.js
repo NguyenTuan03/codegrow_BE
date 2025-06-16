@@ -11,6 +11,7 @@ const { default: axios } = require("axios");
 const enrollCourseModel = require("../models/enroll.model");
 const courseModel = require("../models/course.model");
 const { default: mongoose } = require("mongoose");
+const paymentModel = require("../models/payment.model");
 class paymentService {
     static createPayment = async ({
         req,
@@ -266,10 +267,28 @@ class paymentService {
                     $inc: { enrolledCount: 1 },
                 });
             }
+            await paymentModel.create({
+                user: userId,
+                amount: Number(vnp_Params["vnp_Amount"]) / 100,
+                transactionId: vnp_Params["vnp_TransactionNo"],
+                status: "completed",
+            });
             return "http://localhost:3000/payment/vnpay/success";
         } else {
             return "http://localhost:3000/payment/vnpay/failure";
         }
     };
+    static getUSerById = async ({ userId }) => {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new BadRequestError("Invalid userId");
+        }
+
+        const payments = await paymentModel.find({ user: userId }).sort({
+            createdAt: -1,
+        });
+
+        return payments;
+    };
 }
+
 module.exports = paymentService;
