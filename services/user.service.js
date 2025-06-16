@@ -4,8 +4,8 @@ const {
     BadRequestError,
 } = require("../core/responses/error.response");
 const courseModel = require("../models/course.model");
-const enrollModel = require("../models/enroll.model.js");
-const enrollCourseModel = require("../models/enroll.model.js");
+const enrollModel = require("./models/enroll.model");
+const enrollCourseModel = require("./models/enroll.model");
 const lessonModel = require("../models/lesson.model");
 const userModel = require("../models/user.model");
 const userProgressModel = require("../models/user.process.model");

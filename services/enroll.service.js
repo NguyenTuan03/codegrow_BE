@@ -1,5 +1,5 @@
 const { SELECT_USER, SELECT_COURSE } = require('../configs/user.config')
-const enrollModel = require('../models/enroll.model.js')
+const enrollModel = require('./models/enroll.model.js')
 const {getAllEnrollment} = require('../repositories/enroll.repo')
 class EnrollService {
     static getAllEnroll = async({limit, sort, page, filter, select,expand}) => {

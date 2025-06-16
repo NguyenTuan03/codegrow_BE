@@ -8,7 +8,7 @@ const {
 } = require("../utils/sortObject.util");
 const { BadRequestError } = require("../core/responses/error.response");
 const { default: axios } = require("axios");
-const enrollCourseModel = require("../models/enroll.model.js");
+const enrollCourseModel = require("./models/enroll.model.js");
 const courseModel = require("../models/course.model");
 const { default: mongoose } = require("mongoose");
 const paymentModel = require("../models/payment.model");
