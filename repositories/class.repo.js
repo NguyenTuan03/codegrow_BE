@@ -1,5 +1,5 @@
 const { SELECT_USER, SELECT_COURSE } = require("../configs/user.config");
-const ClassroomModel = require("../models/Classroom.model");
+const classroomModel = require("../models/classroom.model");
 const qaqcreviewModel = require("../models/qaqcreview.model");
 
 const getAllClasses = async ({ limit, sort, page, filter, select,expand }) => {
@@ -25,7 +25,7 @@ const getAllClasses = async ({ limit, sort, page, filter, select,expand }) => {
           .map((field) => populateOptions[field])
           .filter(Boolean)
         : [];
-    const classes = await ClassroomModel
+    const classes = await classroomModel
         .find(filter)
         .sort(sortBy)
         .skip(skip)
@@ -33,7 +33,7 @@ const getAllClasses = async ({ limit, sort, page, filter, select,expand }) => {
         .select(select)  
         .populate(populateFields)      
 
-    const totalClasses = await ClassroomModel.countDocuments(filter);
+    const totalClasses = await classroomModel.countDocuments(filter);
     const totalPages = Math.ceil(totalClasses / limit);
     return {
         classes,

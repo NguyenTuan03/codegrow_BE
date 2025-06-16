@@ -4,7 +4,7 @@ const responseModel = require('../models/response.model')
 const {getAllTickets} = require('../repositories/ticket.repo')
 const courseModel = require("../models/course.model")
 const { SELECT_USER, SELECT_COURSE } = require("../configs/user.config")
-const ClassroomModel = require("../models/Classroom.model")
+const classroomModel = require("../models/classroom.model")
 class ServiceService {
     static getAllTickets = async({limit, sort, page, filter, select,expand}) => {
         return await getAllTickets({limit, sort, page, filter, select, expand})
@@ -44,7 +44,7 @@ class ServiceService {
         }
       
         if (classId) {
-          const classroom = await ClassroomModel.findById(classId);
+          const classroom = await classroomModel.findById(classId);
           if (!classroom) throw new BadRequestError('Class not found');
           payload.class = classroom._id;
         }
