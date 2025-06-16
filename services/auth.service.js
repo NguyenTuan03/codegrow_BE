@@ -7,10 +7,8 @@ const {
 } = require('../core/responses/error.response')
 const bcrypt = require('bcrypt')
 const { USER_ROLES } = require('../configs/user.config')
-const CreateUserDTO = require('../core/dtos/users/create.user.dto')
 const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken')
-const enrollModel = require('../models/enroll.model')
 class AuthService {
     static logIn = async ({email,password}) => {
         if (!email || !password) throw new BadRequestError('Email and password are required')
@@ -102,8 +100,6 @@ class AuthService {
         return accessToken;
     }
     static signUp = async ({fullName, email,password}) => {
-        // const createUserDto = new CreateUserDTO(fullName, email, password);
-        // await createUserDto.validate();
 
         const userHolder = await UserModel.findOne({ email }).lean();
         if (userHolder) throw new BadRequestError("Email already exists");
