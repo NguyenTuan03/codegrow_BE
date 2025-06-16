@@ -8,10 +8,10 @@ const {
 } = require("../utils/sortObject.util");
 const { BadRequestError } = require("../core/responses/error.response");
 const { default: axios } = require("axios");
-const enrollCourseModel = require("./models/enroll.model.js");
 const courseModel = require("../models/course.model");
 const { default: mongoose } = require("mongoose");
 const paymentModel = require("../models/payment.model");
+const enrollModel = require("../models/enroll.model");
 class paymentService {
     static createPayment = async ({
         req,
@@ -179,7 +179,7 @@ class paymentService {
                 $inc: { enrolledCount: 1 },
             });
 
-            await enrollCourseModel.create({
+            await enrollModel.create({
                 user: userId,
                 course: courseId,
             });
@@ -252,13 +252,13 @@ class paymentService {
                 throw new BadRequestError("Invalid userId in order info");
             }
 
-            const alreadyEnrolled = await enrollCourseModel.findOne({
+            const alreadyEnrolled = await enrollModel.findOne({
                 user: userId,
                 course: courseId,
             });
 
             if (!alreadyEnrolled) {
-                await enrollCourseModel.create({
+                await enrollModel.create({
                     user: userId,
                     course: courseId,
                 });

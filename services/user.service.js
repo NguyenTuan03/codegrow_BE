@@ -4,8 +4,6 @@ const {
     BadRequestError,
 } = require("../core/responses/error.response");
 const courseModel = require("../models/course.model");
-const enrollModel = require("./models/enroll.model");
-const enrollCourseModel = require("./models/enroll.model");
 const lessonModel = require("../models/lesson.model");
 const userModel = require("../models/user.model");
 const userProgressModel = require("../models/user.process.model");
@@ -13,6 +11,7 @@ const { getAllUsers } = require("../repositories/user.repo");
 const bcrypt = require("bcrypt");
 const { s3, createUrlS3, uploadImage } = require("../utils/s3client");
 const { v4: uuidv4 } = require("uuid");
+const enrollModel = require("../models/enroll.model");
 class UserService {
     static getAllUser = async ({ limit, sort, page, filter, select }) => {
         return await getAllUsers({ limit, sort, page, filter, select });
@@ -113,7 +112,7 @@ class UserService {
         const course = await courseModel.findById(courseId);
         if (!course) throw new BadRequestError("Course not found");
 
-        const alreadyEnrolled = await enrollCourseModel.findOne({
+        const alreadyEnrolled = await enrollModel.findOne({
             user: id,
             course: courseId,
         });
@@ -139,10 +138,10 @@ class UserService {
     static enrollClass = async ({ id, fullName, email, phone, city, note }) => {
         if (!fullName || !email || !phone || !city || !note)
             throw new BadRequestError("All fields are required");
-        const alreadyConsulted = await enrollCourseModel.findById(id);
+        const alreadyConsulted = await enrollModel.findById(id);
         if (alreadyConsulted)
             throw new BadRequestError("You have sent the consultant request!");
-        const enrollMent = await enrollCourseModel.create({
+        const enrollMent = await enrollModel.create({
             user: id,
             fullName,
             email,

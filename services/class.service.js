@@ -5,7 +5,7 @@ const {
 } = require("../core/responses/error.response");
 const ClassroomModel = require("../models/Classroom.model");
 const CourseModel = require("../models/course.model");
-const enrollModel = require("./models/enroll.model.js");
+const enrollModel = require("../models/enroll.model");
 const qaqcreviewModel = require("../models/qaqcreview.model");
 const userModel = require("../models/user.model");
 const {
