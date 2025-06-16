@@ -6,9 +6,9 @@ var router = express.Router();
 // router.post('/create-vnpay',
 //     catchAsyncHandle(paymentController.createVNpay)
 // )
-// router.get('/vnpay/callback',
-//     catchAsyncHandle(paymentController.vnPayCallback)
-// )
+router.get('/vnpay/callback',
+    catchAsyncHandle(paymentController.vnPayCallback)
+)
 router.post('/momo/ipn',
     catchAsyncHandle(paymentController.momoIpn)
 )
