@@ -40,5 +40,13 @@ class paymentController {
             }),
         }).send(res);
     };
+    getUSerById = async (req,res) => {
+        new OK({
+            message: "Get payment's user successfully",
+            metadata: await paymentService.getUSerById({
+                userId: req.params.userId,
+            }),
+        }).send(res);
+    }
 }
 module.exports = new paymentController();
