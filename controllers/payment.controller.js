@@ -26,9 +26,17 @@ class paymentController {
         new OK({
             message: "Response vnpay sucessfully",
             metadata: await paymentService.vnpay({
-                ipAddr: '127.0.0.1',
+                ipAddr: "127.0.0.1",
                 amount: req.query.amount,
                 orderId: req.query.orderId,
+            }),
+        }).send(res);
+    };
+    vnPayCallback = async (req, res) => {
+        new OK({
+            message: "vnpay callback sucessfully",
+            metadata: await paymentService.vnPayCallback({
+                vnp_Params: req.query,
             }),
         }).send(res);
     };

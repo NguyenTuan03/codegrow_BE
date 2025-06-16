@@ -2,11 +2,15 @@ const crypto = require("crypto");
 const moment = require("moment");
 const qs = require("qs");
 const { VNPAY, MOMO } = require("../configs/payment.config");
-const { sortObject } = require("../utils/sortObject.util");
+const {
+    sortObject,
+    extractUserIdFromOrderInfo,
+} = require("../utils/sortObject.util");
 const { BadRequestError } = require("../core/responses/error.response");
 const { default: axios } = require("axios");
 const enrollCourseModel = require("../models/enroll.model");
 const courseModel = require("../models/course.model");
+const { default: mongoose } = require("mongoose");
 class paymentService {
     static createPayment = async ({
         req,
@@ -16,45 +20,42 @@ class paymentService {
         paymentMethod,
     }) => {
         if (paymentMethod === "vnpay") {
-            const createDate = moment().format("YYYYMMDDHHmmss");
-            const orderId = moment().format("DDHHmmss");
-            const ipAddr =
-                req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-            const expireDate = moment()
-                .add(15, "minutes")
-                .format("YYYYMMDDHHmmss");
-            let vnp_Params = {
+            const ipAddr = "127.0.0.1";
+            const tmnCode = process.env.VNP_TMN_CODE;
+            const secretKey = process.env.VNP_HASH_SECRET;
+            const vnpUrl = process.env.VNP_URL;
+            const returnUrl = "http://localhost:8888/payment/vnpay/callback";
+
+            const vnp_Params = {
                 vnp_Version: "2.1.0",
                 vnp_Command: "pay",
-                vnp_TmnCode: VNPAY.tmnCode,
-                vnp_Amount: amount * 100,
-                vnp_CurrCode: "VND",
-                vnp_TxnRef: `${orderId}-${courseId}`,
-                vnp_OrderInfo: `Thanh toan khoa hoc CodeGrow`,
-                vnp_OrderType: "billpayment",
+                vnp_TmnCode: tmnCode,
                 vnp_Locale: "vn",
-                vnp_ReturnUrl: VNPAY.returnUrl,
+                vnp_CurrCode: "VND",
+                vnp_TxnRef: courseId,
+                vnp_OrderInfo: `Thanh toan khoa hoc ${courseId} ${userId}`,
+                vnp_OrderType: "other",
+                vnp_Amount: amount * 100,
+                vnp_ReturnUrl: returnUrl,
                 vnp_IpAddr: ipAddr,
-                vnp_CreateDate: createDate,
-                vnp_ExpireDate: expireDate,
+                vnp_CreateDate: moment().format("YYYYMMDDHHmmss"),
             };
 
             const sortedParams = sortObject(vnp_Params);
-            const signData = Object.entries(sortedParams)
-                .map(([key, value]) => `${key}=${value}`)
-                .join("&");
 
-            const secureHash = crypto
-                .createHmac("sha512", VNPAY.hashSecret)
-                .update(signData)
+            const signData = qs.stringify(sortedParams, { encode: false });
+            const hmac = crypto.createHmac("sha512", secretKey);
+            const signed = hmac
+                .update(Buffer.from(signData, "utf-8"))
                 .digest("hex");
 
-            sortedParams["vnp_SecureHash"] = secureHash;
+            sortedParams["vnp_SecureHash"] = signed;
 
-            const paymentUrl = `${VNPAY.url}?${qs.stringify(sortedParams, {
-                encode: false,
-            })}`;
-
+            const paymentUrl =
+                vnpUrl + "?" + qs.stringify(sortedParams, { encode: false });
+            console.log("Sign Data:", signData);
+            console.log("Signed:", signed);
+            console.log("Payment URL:", paymentUrl);
             return paymentUrl;
         }
         if (paymentMethod === "momo") {
@@ -191,7 +192,7 @@ class paymentService {
         const secretKey = process.env.VNP_HASH_SECRET;
         const vnpUrl = process.env.VNP_URL;
         const returnUrl = process.env.VNP_RETURN_URL;
-        
+
         const vnp_Params = {
             vnp_Version: "2.1.0",
             vnp_Command: "pay",
@@ -207,26 +208,68 @@ class paymentService {
             vnp_CreateDate: moment().format("YYYYMMDDHHmmss"),
         };
 
-        // Bước 2: Sắp xếp thứ tự keys
         const sortedParams = sortObject(vnp_Params);
 
-        // Bước 3: Tạo chuỗi và ký
         const signData = qs.stringify(sortedParams, { encode: false });
         const hmac = crypto.createHmac("sha512", secretKey);
         const signed = hmac
             .update(Buffer.from(signData, "utf-8"))
             .digest("hex");
 
-        // Bước 4: Gán vào object gốc
         sortedParams["vnp_SecureHash"] = signed;
 
-        // Bước 5: Tạo URL
         const paymentUrl =
             vnpUrl + "?" + qs.stringify(sortedParams, { encode: false });
         console.log("Sign Data:", signData);
         console.log("Signed:", signed);
         console.log("Payment URL:", paymentUrl);
         return paymentUrl;
+    };
+    static vnPayCallback = async ({ vnp_Params }) => {
+        console.log(vnp_Params);
+        const secureHash = vnp_Params["vnp_SecureHash"];
+        delete vnp_Params["vnp_SecureHash"];
+        delete vnp_Params["vnp_SecureHashType"];
+
+        vnp_Params = sortObject(vnp_Params);
+        const signData = qs.stringify(vnp_Params, { encode: false });
+        const hmac = crypto.createHmac("sha512", process.env.VNP_HASH_SECRET);
+        const signed = hmac
+            .update(Buffer.from(signData, "utf-8"))
+            .digest("hex");
+
+        if (secureHash !== signed) {
+            throw new BadRequestError("Invalid signature!");
+        }
+
+        if (vnp_Params["vnp_ResponseCode"] === "00") {
+            const courseId = vnp_Params["vnp_TxnRef"];
+            const orderInfo = vnp_Params["vnp_OrderInfo"];
+            const userId = extractUserIdFromOrderInfo(orderInfo);
+            console.log(orderInfo, userId);
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                throw new BadRequestError("Invalid userId in order info");
+            }
+
+            const alreadyEnrolled = await enrollCourseModel.findOne({
+                user: userId,
+                course: courseId,
+            });
+
+            if (!alreadyEnrolled) {
+                await enrollCourseModel.create({
+                    user: userId,
+                    course: courseId,
+                });
+
+                await courseModel.findByIdAndUpdate(courseId, {
+                    $inc: { enrolledCount: 1 },
+                });
+            }
+            return "http://localhost:3000/payment/vnpay/success";
+        } else {
+            return "http://localhost:3000/payment/vnpay/failure";
+        }
     };
 }
 module.exports = paymentService;
