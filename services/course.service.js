@@ -2,12 +2,12 @@ const { SELECT_USER, SELECT_COURSE } = require("../configs/user.config");
 const { BadRequestError } = require("../core/responses/error.response");
 const courseModel = require("../models/course.model");
 const categoryModel = require("../models/category.model");
-const enrollModel = require("./models/enroll.model.js");
 const { getAllCourses } = require("../repositories/course.repo");
 const lessonModel = require("../models/lesson.model");
 const commentModel = require("../models/comment.model");
 const { s3, createUrlS3, uploadImage } = require("../utils/s3client");
 const { v4: uuidv4 } = require("uuid");
+const enrollModel = require("../models/enroll.model");
 class CourseService {
     static getAllCourse = async ({
         limit,
