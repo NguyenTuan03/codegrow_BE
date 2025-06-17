@@ -25,7 +25,7 @@ class paymentService {
             const tmnCode = process.env.VNP_TMN_CODE;
             const secretKey = process.env.VNP_HASH_SECRET;
             const vnpUrl = process.env.VNP_URL;
-            const returnUrl = "http://localhost:8888/payment/vnpay/callback";
+            const returnUrl = `${process.env.SERVER_URL}/payment/vnpay/callback`;
 
             const vnp_Params = {
                 vnp_Version: "2.1.0",
@@ -273,9 +273,9 @@ class paymentService {
                 transactionId: vnp_Params["vnp_TransactionNo"],
                 status: "completed",
             });
-            return "http://localhost:3000/payment/vnpay/success";
+            return `${process.env.CLIENT_URL}/payment/vnpay/success`;
         } else {
-            return "http://localhost:3000/payment/vnpay/failure";
+            return `${process.env.CLIENT_URL}/payment/vnpay/failure`;
         }
     };
     static getUSerById = async ({ userId }) => {
