@@ -3,7 +3,7 @@ const {
     NotFoundRequestError,
     BadRequestError,
 } = require("../core/responses/error.response");
-const ClassroomModel = require("../models/Classroom.model");
+const classroomModel = require("../models/classroom.model");
 const CourseModel = require("../models/course.model");
 const enrollModel = require("../models/enroll.model");
 const qaqcreviewModel = require("../models/qaqcreview.model");
@@ -40,7 +40,7 @@ class ClassService {
             .sort({ createdAt: -1 });
     };
     static getClassById = async ({ id }) => {
-        const classroom = await ClassroomModel.findOne({ _id: id })
+        const classroom = await classroomModel.findOne({ _id: id })
             .populate([
                 {
                     path: "mentor",
@@ -74,7 +74,7 @@ class ClassService {
         linkMeet,
         imgUrl,
     }) => {
-        const Isclassroom = await ClassroomModel.findOne({ title }).lean();
+        const Isclassroom = await classroomModel.findOne({ title }).lean();
         if (Isclassroom) throw new BadRequestError("Class already exist");
 
         const Iscourse = await CourseModel.findById(courseId).lean();
@@ -125,7 +125,7 @@ class ClassService {
 
             imgUrl = createUrlS3(key);
         }
-        const newClass = await ClassroomModel.create({
+        const newClass = await classroomModel.create({
             title,
             course: courseId,
             description,
@@ -149,11 +149,11 @@ class ClassService {
         linkMeet,
         imgUrl
     }) => {
-        const existingClass = await ClassroomModel.findById(id);
+        const existingClass = await classroomModel.findById(id);
         if (!existingClass) throw new BadRequestError("Classroom not found");
 
         if (title && title !== existingClass.title) {
-            const titleExists = await ClassroomModel.findOne({ title });
+            const titleExists = await classroomModel.findOne({ title });
             if (titleExists)
                 throw new BadRequestError(
                     "A class with this title already exists"
@@ -243,7 +243,7 @@ class ClassService {
         return existingClass;
     };
     static deleteClassroom = async ({ id }) => {
-        const existingClass = await ClassroomModel.findById(id);
+        const existingClass = await classroomModel.findById(id);
         if (!existingClass) {
             throw new NotFoundError("Classroom not found");
         }
@@ -256,7 +256,7 @@ class ClassService {
         await existingClass.save();
     };
     static assignMentor = async ({ mentorId, classId }) => {
-        const classroom = await ClassroomModel.findById(classId);
+        const classroom = await classroomModel.findById(classId);
         if (!classroom) throw new NotFoundRequestError("Classroom not found");
 
         if (classroom.mentor) {
@@ -271,7 +271,7 @@ class ClassService {
         return classroom;
     };
     static addStudentsToClass = async ({ userId, id }) => {
-        const classroom = await ClassroomModel.findById(id);
+        const classroom = await classroomModel.findById(id);
         if (!classroom) throw new NotFoundRequestError("Classroom not found");
 
         const user = await userModel.findOne({
