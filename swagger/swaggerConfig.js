@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:8888',
+        url: process.env.SERVER_URL,
       },
     ],
     components: {
