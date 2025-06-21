@@ -109,23 +109,48 @@ class UserService {
     static enrollCourse = async ({ req, id, courseId }) => {
         if (!courseId) throw new BadRequestError("CourseId is required");
 
+        // Tìm khóa học
         const course = await courseModel.findById(courseId);
         if (!course) throw new BadRequestError("Course not found");
 
+        // Kiểm tra user tồn tại
         const user = await userModel.findById(id).select("enrollCourses");
         if (!user) throw new BadRequestError("User not found");
 
-        if (user?.enrollCourses?.includes(courseId)) {
+        // Đã enroll chưa?
+        if (user.enrollCourses.includes(courseId)) {
             throw new BadRequestError("You already enrolled this course");
         }
+
+        // Nếu khóa học miễn phí
         if (course.price === 0) {
+            // Thêm course vào user.enrollCourses
             await userModel.findByIdAndUpdate(id, {
                 $addToSet: { enrollCourses: courseId },
             });
 
+            // Thêm user vào course.students
             await courseModel.findByIdAndUpdate(courseId, {
                 $addToSet: { students: id },
+                $inc: { enrolledCount: 1 }, // ✅ Tăng số lượng học viên
             });
+
+            // Debug sau cập nhật
+            const updatedUser = await userModel
+                .findById(id)
+                .populate("enrollCourses");
+            const updatedCourse = await courseModel
+                .findById(courseId)
+                .populate("students");
+
+            console.log(
+                "✅ User.enrollCourses:",
+                updatedUser.enrollCourses?.map((c) => c._id)
+            );
+            console.log(
+                "✅ Course.students:",
+                updatedCourse.students?.map((u) => u._id)
+            );
 
             return {
                 needPayment: false,
@@ -137,6 +162,8 @@ class UserService {
                 },
             };
         }
+
+        // Nếu là khóa học trả phí → tạo link thanh toán
         const payService = require("./payment.service");
         const payLink = await payService.createPayOSPayment({
             req,
