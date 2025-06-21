@@ -4,6 +4,7 @@ const { default: mongoose } = require("mongoose");
 const paymentModel = require("../models/payment.model");
 const { generateSignature } = require("../utils/generateSignature.util");
 const userModel = require("../models/user.model");
+const courseModel = require("../models/course.model");
 class paymentService {
     static getUSerById = async ({ userId }) => {
         if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -84,9 +85,9 @@ class paymentService {
             const user = await userModel.findById(id).select("enrollCourses");
             if (!user) throw new BadRequestError("User not found");
 
-            if (!user.enrollCourses.includes(courseId)) {
+            if (!user.enrolledCourses.includes(courseId)) {
                 await userModel.findByIdAndUpdate(userId, {
-                    $addToSet: { enrollCourses: courseId },
+                    $addToSet: { enrolledCourses: courseId },
                 });
 
                 await courseModel.findByIdAndUpdate(courseId, {
