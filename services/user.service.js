@@ -119,7 +119,7 @@ class UserService {
         if (!user) throw new BadRequestError("User not found");
 
         // Đã enroll chưa?
-        if (user.enrollCourses.includes(courseId)) {
+        if (user?.enrollCourses?.includes(courseId)) {
             throw new BadRequestError("You already enrolled this course");
         }
         if (!mongoose.Types.ObjectId.isValid(courseId)) {
