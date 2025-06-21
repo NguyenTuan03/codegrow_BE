@@ -25,9 +25,11 @@ class UserService {
                 select: "name",
             },
         });
+
         if (!user) {
             throw new NotFoundRequestError("User not found");
         }
+
         return user;
     };
     static getConsultedUser = async () => {
