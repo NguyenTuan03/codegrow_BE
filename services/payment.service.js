@@ -38,15 +38,13 @@ class paymentService {
         };
         console.log("=== Đang dùng callback ===", process.env.PAYOS_CALLBACK);
         const orderCode = Date.now();
+        const extraData = Buffer.from(JSON.stringify({ userId, courseId })).toString("base64");
         const payload = {
             orderCode: orderCode,
             amount: amount,
             description: `Thanh toán khóa học`,
             cancelUrl: PAYOS.cancelUrl,
             returnUrl: PAYOS.returnUrl,
-            extraData: Buffer.from(
-                JSON.stringify({ userId, courseId })
-            ).toString("base64"),
         };
 
         const signature = generateSignature(payload, PAYOS.checksumKey);
@@ -78,28 +76,18 @@ class paymentService {
             if (paymentInfo.status !== "PAID") {
                 return res.redirect(process.env.PAYOS_FAILED);
             }
-            const extraData = JSON.parse(
-                Buffer.from(paymentInfo.extraData, "base64").toString("utf8")
-            );
-            const { userId, courseId } = extraData;
-
+            console.log(userId);
+            console.log(courseId);
             await paymentModel.create({
                 user: userId,
                 amount: paymentInfo.amount,
                 transactionId: String(orderCode),
-                status: "completed",
             });
-
-            const user = await userModel
-                .findById(userId)
-                .select("enrolledCourses");
+            
+            const user = await userModel.findById(userId).select("enrolledCourses");
             if (!user) throw new BadRequestError("User not found");
 
-            const isAlreadyEnrolled = user.enrolledCourses.some(
-                (course) => course.toString() === courseId.toString()
-            );
-
-            if (!isAlreadyEnrolled) {
+            if (!user?.enrolledCourses?.includes(courseId)) {
                 await userModel.findByIdAndUpdate(userId, {
                     $addToSet: { enrolledCourses: courseId },
                 });
