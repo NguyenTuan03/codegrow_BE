@@ -37,7 +37,7 @@ class paymentService {
         console.log("=== Đang dùng callback ===", process.env.PAYOS_CALLBACK);
         const orderCode = Date.now();
         const payload = {
-            orderCode: orderCode, 
+            orderCode: orderCode,
             amount: amount,
             description: `Thanh toán khóa học`,
             cancelUrl: PAYOS.cancelUrl,
@@ -67,7 +67,7 @@ class paymentService {
 
         return payOSRes.checkoutUrl;
     };
-    static payOSCallback = async ({ orderCode, status }) => {
+    static payOSCallback = async ({ orderCode, status, userId, courseId }) => {
         try {
             const paymentInfo = await getPaymentFromPayOS(orderCode);
             if (paymentInfo.status !== "PAID") {
@@ -80,26 +80,24 @@ class paymentService {
                 transactionId: String(orderCode),
             });
 
-            const alreadyEnrolled = await enrollModel.findOne({
-                user: userId,
-                course: courseId,
-            });
-            if (!alreadyEnrolled) {
-                await enrollModel.create({
-                    user: userId,
-                    course: courseId,
-                    progress: 0,
-                    completed: false,
-                });
-            }
+            const user = await userModel.findById(id).select("enrollCourses");
+            if (!user) throw new BadRequestError("User not found");
 
+            if (user.enrollCourses.includes(courseId)) {
+                throw new BadRequestError("You already enrolled this course");
+            }
+            await userModel.findByIdAndUpdate(id, {
+                $addToSet: { enrollCourses: courseId },
+            });
+            await courseModel.findByIdAndUpdate(courseId, {
+                $addToSet: { students: userId },
+            });
             return res.redirect(process.env.PAYOS_SUCCESS);
         } catch (err) {
             console.error("Callback xử lý thất bại:", err);
             return res.redirect(process.env.PAYOS_ERROR);
         }
     };
-    
 }
 
 module.exports = paymentService;

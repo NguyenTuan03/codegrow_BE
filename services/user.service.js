@@ -110,11 +110,10 @@ class UserService {
         const course = await courseModel.findById(courseId);
         if (!course) throw new BadRequestError("Course not found");
 
-        const alreadyEnrolled = await enrollModel.findOne({
-            user: id,
-            course: courseId,
-        });
-        if (alreadyEnrolled) {
+        const user = await userModel.findById(id).select("enrollCourses");
+        if (!user) throw new BadRequestError("User not found");
+
+        if (user.enrollCourses.includes(courseId)) {
             throw new BadRequestError("You already enrolled this course");
         }
         if (course.price === 0) {
@@ -124,7 +123,12 @@ class UserService {
                 progress: 0,
                 completed: false,
             });
-
+            await userModel.findByIdAndUpdate(id, {
+                $addToSet: { enrollCourses: courseId },
+            });
+            await courseModel.findByIdAndUpdate(courseId, {
+                $addToSet: { students: id },
+            });
             return {
                 needPayment: false,
                 enrollment,

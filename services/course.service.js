@@ -155,22 +155,14 @@ class CourseService {
     static getStudentsEnrolled = async ({ id }) => {
         if (!id) throw new BadRequestError("CourseId is required");
 
-        const enrollment = await enrollModel
-            .find({
-                course: id,
-            })
-            .populate({
-                path: "user",
-                select: SELECT_USER.DEFAULT,
-            });
+        const course = await courseModel.findById(id).populate({
+            path: "students",
+            select: SELECT_USER.DEFAULT,
+        });
 
-        const students = enrollment
-            .map((enroll) => {
-                return enroll.user;
-            })
-            .filter(Boolean);
+        if (!course) throw new BadRequestError("Course not found");
 
-        return students;
+        return course.students;
     };
     static getLessonsByCourse = async ({ id }) => {
         const lessons = await lessonModel
