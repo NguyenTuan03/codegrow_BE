@@ -44,6 +44,9 @@ class paymentService {
             description: `Thanh toán khóa học`,
             cancelUrl: PAYOS.cancelUrl,
             returnUrl: PAYOS.returnUrl,
+            extraData: Buffer.from(
+                JSON.stringify({ userId, courseId })
+            ).toString("base64"),
         };
 
         const signature = generateSignature(payload, PAYOS.checksumKey);
@@ -75,17 +78,28 @@ class paymentService {
             if (paymentInfo.status !== "PAID") {
                 return res.redirect(process.env.PAYOS_FAILED);
             }
+            const extraData = JSON.parse(
+                Buffer.from(paymentInfo.extraData, "base64").toString("utf8")
+            );
+            const { userId, courseId } = extraData;
 
             await paymentModel.create({
                 user: userId,
                 amount: paymentInfo.amount,
                 transactionId: String(orderCode),
+                status: "completed",
             });
 
-            const user = await userModel.findById(userId).select("enrolledCourses");
+            const user = await userModel
+                .findById(userId)
+                .select("enrolledCourses");
             if (!user) throw new BadRequestError("User not found");
 
-            if (!user?.enrolledCourses?.includes(courseId)) {
+            const isAlreadyEnrolled = user.enrolledCourses.some(
+                (course) => course.toString() === courseId.toString()
+            );
+
+            if (!isAlreadyEnrolled) {
                 await userModel.findByIdAndUpdate(userId, {
                     $addToSet: { enrolledCourses: courseId },
                 });
