@@ -12,6 +12,7 @@ const bcrypt = require("bcrypt");
 const { s3, createUrlS3, uploadImage } = require("../utils/s3client");
 const { v4: uuidv4 } = require("uuid");
 const enrollModel = require("../models/enroll.model");
+const { default: mongoose } = require("mongoose");
 class UserService {
     static getAllUser = async ({ limit, sort, page, filter, select }) => {
         return await getAllUsers({ limit, sort, page, filter, select });
@@ -121,12 +122,14 @@ class UserService {
         if (user.enrollCourses.includes(courseId)) {
             throw new BadRequestError("You already enrolled this course");
         }
-
+        if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            throw new Error("Invalid courseId format");
+        }
         // Nếu khóa học miễn phí
         if (course.price === 0) {
             // Thêm course vào user.enrollCourses
             await userModel.findByIdAndUpdate(id, {
-                $addToSet: { enrollCourses: courseId },
+                $addToSet: { enrolledCourses: courseId },
             });
 
             // Thêm user vào course.students

@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
             unique: true,
             trim: true,
         },
-        enrollCourses: [
+        enrolledCourses: [
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Course",
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
         ],
         password: {
             type: String,
-            rquired: true,
+            required: true,
         },
         isVerified: {
             type: Boolean,
