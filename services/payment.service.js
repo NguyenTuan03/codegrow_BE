@@ -3,6 +3,7 @@ const { default: axios } = require("axios");
 const { default: mongoose } = require("mongoose");
 const paymentModel = require("../models/payment.model");
 const { generateSignature } = require("../utils/generateSignature.util");
+const userModel = require("../models/user.model");
 class paymentService {
     static getUSerById = async ({ userId }) => {
         if (!mongoose.Types.ObjectId.isValid(userId)) {
