@@ -62,5 +62,5 @@ class paymentController {
     cancelPayment = (req, res) => {
         return res.redirect(`${process.env.PAYOS_FAILED}?canceled=true`);
     };
-}
+}     
 module.exports = new paymentController();
