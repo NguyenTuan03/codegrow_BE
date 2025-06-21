@@ -11,7 +11,7 @@ class lessonController {
                 content: req.body.content,
                 order: req.body.order,
                 quiz: req.body.quiz,
-                 free_url: req.body.free_url,
+                free_url: req.body.free_url,
                 video: req.file,
             }),
         }).send(res);
@@ -35,6 +35,14 @@ class lessonController {
                 id: req.params.id,
                 reviewerId: req.userId,
                 ...req.body,
+            }),
+        }).send(res);
+    };
+    deleteLesson = async (req, res) => {
+        new OK({
+            message: "Lesson deleted successfully",
+            metadata: await LessonService.deleteLesson({
+                id: req.params.id,
             }),
         }).send(res);
     };

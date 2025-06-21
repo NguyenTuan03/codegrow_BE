@@ -60,7 +60,6 @@ class UserController {
                 req,
                 id: req.userId,
                 courseId: req.body.courseId,
-                paymentMethod: req.body.paymentMethod,
             }),
         }).send(res);
     };

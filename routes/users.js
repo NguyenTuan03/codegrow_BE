@@ -222,6 +222,7 @@ router.post('/enroll',
     checkRoles({requiredRoles:[USER_ROLES.USER]}),
     catchAsyncHandle(userController.enrollCourse)
 )
+
 /**
  * @swagger 
  * /users/enroll-class:

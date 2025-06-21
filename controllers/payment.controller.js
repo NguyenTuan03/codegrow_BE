@@ -40,13 +40,27 @@ class paymentController {
             }),
         }).send(res);
     };
-    getUSerById = async (req,res) => {
+    getUSerById = async (req, res) => {
         new OK({
             message: "Get payment's user successfully",
             metadata: await paymentService.getUSerById({
                 userId: req.params.userId,
             }),
         }).send(res);
-    }
-}
+    };
+    payOSCallback = async (req, res) => {
+        new OK({
+            message: "payos callback sucessfully",
+            metadata: await paymentService.payOSCallback({
+                orderCode: req.query.orderCode,
+                status: req.query.status,
+                userId: req.userId,
+                courseId: req.query.courseId,
+            }),
+        }).send(res);
+    };
+    cancelPayment = (req, res) => {
+        return res.redirect(`${process.env.PAYOS_FAILED}?canceled=true`);
+    };
+}     
 module.exports = new paymentController();

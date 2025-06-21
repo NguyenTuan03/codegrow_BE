@@ -5,9 +5,9 @@ const PostSchema = new mongoose.Schema(
     {
         title: { type: String, required: true },
         content: { type: String, required: true },
-        course: {
+        classroom: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Course",
+            ref: "Classroom",
             required: true,
         },
         author: {

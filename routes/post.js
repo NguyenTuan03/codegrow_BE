@@ -123,6 +123,11 @@ router.put('/:postId',
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
+ *         name: class
+ *         schema:
+ *           type: string
+ *         description: Class ID to filter posts
+ *       - in: query
  *         name: limit
  *         schema:
  *           type: integer

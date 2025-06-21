@@ -1,5 +1,5 @@
 const { SELECT_COURSE, SELECT_USER } = require("../configs/user.config");
-const courseModel = require("../models/course.model");
+const classroomModel = require("../models/classroom.model");
 const postModel = require("../models/post.model");
 const userModel = require("../models/user.model");
 const { getAllPosts } = require("../repositories/post.repo");
@@ -23,45 +23,45 @@ class PostService {
             expand,
         });
     };
-    static getPostById = async ({ postId }) => {
-        if (!postId) throw new BadRequestError("Post ID is required");
-        const post = await postModel
-            .findById(postId)
-            .populate([
-                {
-                    path: "course",
-                    select: SELECT_COURSE.FULL,
-                },
-                {
-                    path: "author",
-                    select: SELECT_USER.DEFAULT,
-                },
-            ])
-            .find(
-                { isDeleted: false }
-            )
-            .lean();
-        if (!post) {
-            throw new NotFoundRequestError("Post not found");
+    getAllPosts = async (req, res) => {
+        const filter = {
+            isDeleted: false,
+        };
+
+        if (req.query.class) {
+            filter.class = req.query.class;
         }
-        return post;
+
+        const posts = await PostService.getAllPost({
+            limit: req.query.limit || 1000,
+            sort: req.query.sort || "ctime",
+            page: req.query.page || 1,
+            filter,
+            select: req.query.select || SELECT_POST.FULL,
+            expand: req.query.expand || "",
+        });
+
+        new OK({
+            message: "Get all posts successfully",
+            metadata: posts,
+        }).send(res);
     };
     static createPost = async ({
         title,
         content,
-        course,
+        classroom,
         author,
         tags,
         attachments,
     }) => {
-        if (!title || !content || !course) {
+        if (!title || !content || !classroom) {
             throw new BadRequestError(
-                "Missing any required fields: title, content, course"
+                "Missing any required fields: title, content, classroom"
             );
         }
-        const courseExists = await courseModel.findById(course);
-        if (!courseExists) {
-            throw new NotFoundRequestError("Course not found");
+        const classExists = await classroomModel.findById(classroom);
+        if (!classExists) {
+            throw new NotFoundRequestError("class not found");
         }
         const userExists = await userModel.findById(author);
         if (!userExists) {
@@ -87,7 +87,7 @@ class PostService {
         const newPost = await postModel.create({
             title,
             content,
-            course: courseExists._id,
+            classroom: classExists._id,
             author: userExists._id,
             tags,
             attachments: fileMeta ? [fileMeta] : [],

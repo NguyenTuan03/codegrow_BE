@@ -104,10 +104,8 @@ class UserService {
         await userModel.updateOne({ _id: id }, { isDeleted: true });
         return user;
     };
-    static enrollCourse = async ({ req, id, courseId, paymentMethod }) => {
+    static enrollCourse = async ({ req, id, courseId }) => {
         if (!courseId) throw new BadRequestError("CourseId is required");
-        if (!paymentMethod)
-            throw new BadRequestError("Payment method is required");
 
         const course = await courseModel.findById(courseId);
         if (!course) throw new BadRequestError("Course not found");
@@ -119,15 +117,25 @@ class UserService {
         if (alreadyEnrolled) {
             throw new BadRequestError("You already enrolled this course");
         }
+        if (course.price === 0) {
+            const enrollment = await enrollModel.create({
+                user: id,
+                course: courseId,
+                progress: 0,
+                completed: false,
+            });
 
+            return {
+                needPayment: false,
+                enrollment,
+            };
+        }
         const payService = require("./payment.service");
-
-        const payLink = await payService.createPayment({
+        const payLink = await payService.createPayOSPayment({
             req,
             amount: course.price,
             userId: id,
             courseId,
-            paymentMethod,
         });
 
         return {
