@@ -18,10 +18,6 @@ const userSchema = new mongoose.Schema(
             enum: ['admin','customer','qaqc','mentor'],
             default:'customer'
         },
-        wallet: { 
-            type: Number, 
-            default: 0 
-        }, 
         email:{
             type:String,
             unique:true,

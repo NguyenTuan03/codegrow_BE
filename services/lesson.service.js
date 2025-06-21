@@ -95,5 +95,11 @@ class LessonService {
         if (!lesson) throw new BadRequestError("Lesson not found");
         return lesson;
     };
+    static deleteLesson = async({id}) => {
+        if (!id) throw new BadRequestError('Missing lesson id');
+        await lessonModel.deleteOne({
+            _id: id
+        })
+    }
 }
 module.exports = LessonService;

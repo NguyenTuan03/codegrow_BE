@@ -1,11 +1,11 @@
-var express = require('express');
-const { catchAsyncHandle } = require('../middlewares/error.middleware');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const { checkRoles } = require('../middlewares/role.middleware');
-const { USER_ROLES } = require('../configs/user.config');
-const lessonController = require('../controllers/lesson.controller');
+var express = require("express");
+const { catchAsyncHandle } = require("../middlewares/error.middleware");
+const AuthMiddleware = require("../middlewares/auth.middleware");
+const { checkRoles } = require("../middlewares/role.middleware");
+const { USER_ROLES } = require("../configs/user.config");
+const lessonController = require("../controllers/lesson.controller");
 var router = express.Router();
-const multer = require('multer');
+const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 /**
@@ -45,12 +45,13 @@ const upload = multer({ storage });
  *       201:
  *         description: Lesson created successfully
  */
-router.post('/',
-    upload.single('video'),
+router.post(
+    "/",
+    upload.single("video"),
     catchAsyncHandle(AuthMiddleware),
-    catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
+    catchAsyncHandle(checkRoles({ requiredRoles: [USER_ROLES.ADMIN] })),
     catchAsyncHandle(lessonController.createLesson)
-)
+);
 /**
  * @swagger
  * lesson/media/generate-upload-url:
@@ -73,11 +74,12 @@ router.post('/',
  *       200:
  *         description: Upload URL created
  */
-router.post('/media/generate-upload-url',
+router.post(
+    "/media/generate-upload-url",
     catchAsyncHandle(AuthMiddleware),
-    catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.ADMIN]})),
+    catchAsyncHandle(checkRoles({ requiredRoles: [USER_ROLES.ADMIN] })),
     catchAsyncHandle(lessonController.uploadVideo)
-)
+);
 /**
  * @swagger
  * /lesson/{id}:
@@ -97,9 +99,7 @@ router.post('/media/generate-upload-url',
  *       404:
  *         description: Lesson not found
  */
-router.get('/:id',
-    catchAsyncHandle(lessonController.getLessonById)
-)
+router.get("/:id", catchAsyncHandle(lessonController.getLessonById));
 
 /**
  * @swagger
@@ -137,9 +137,16 @@ router.get('/:id',
  *       404:
  *         description: Lesson not found
  */
-router.put('/:id/review',
+router.put(
+    "/:id/review",
     catchAsyncHandle(AuthMiddleware),
-    catchAsyncHandle(checkRoles({requiredRoles:[USER_ROLES.QAQC]})),
+    catchAsyncHandle(checkRoles({ requiredRoles: [USER_ROLES.QAQC] })),
     catchAsyncHandle(lessonController.reviewLesson)
-)
-module.exports = router
+);
+router.delete(
+    "/:id",
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(checkRoles({ requiredRoles: [USER_ROLES.ADMIN] })),
+    catchAsyncHandle(lessonController.deleteLesson)
+);
+module.exports = router;
