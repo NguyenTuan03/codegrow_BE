@@ -119,7 +119,7 @@ class UserService {
         if (!user) throw new BadRequestError("User not found");
 
         // Đã enroll chưa?
-        if (user?.enrollCourses?.includes(courseId)) {
+        if (user?.enrolledCourses?.includes(courseId)) {
             throw new BadRequestError("You already enrolled this course");
         }
         if (!mongoose.Types.ObjectId.isValid(courseId)) {
@@ -141,14 +141,14 @@ class UserService {
             // Debug sau cập nhật
             const updatedUser = await userModel
                 .findById(id)
-                .populate("enrollCourses");
+                .populate("enrolledCourses");
             const updatedCourse = await courseModel
                 .findById(courseId)
                 .populate("students");
 
             console.log(
-                "✅ User.enrollCourses:",
-                updatedUser.enrollCourses?.map((c) => c._id)
+                "✅ User.enrolledCourses:",
+                updatedUser.enrolledCourses?.map((c) => c._id)
             );
             console.log(
                 "✅ Course.students:",
