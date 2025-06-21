@@ -3,6 +3,7 @@ const courseModel = require("../models/course.model");
 const lessonModel = require("../models/lesson.model");
 
 const getAllCourses = async ({ limit, sort, page, filter, select,expand }) => {
+    filter.isDeleted = false;
     const skip = (page - 1) * limit;
     const sortBy = sort === 'ctime' ? { _id: -1 } : { _id: 1 }
     const populateOptions = {
