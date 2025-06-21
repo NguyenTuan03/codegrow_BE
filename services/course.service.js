@@ -28,7 +28,7 @@ class CourseService {
     };
     static getCourseById = async ({ id }) => {
         const classroom = await courseModel
-            .findById(id)
+            .findOne({ _id: id, isDeleted: false })
             .populate([
                 {
                     path: "author",

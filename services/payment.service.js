@@ -83,16 +83,20 @@ class paymentService {
             const user = await userModel.findById(id).select("enrollCourses");
             if (!user) throw new BadRequestError("User not found");
 
-            if (user.enrollCourses.includes(courseId)) {
-                throw new BadRequestError("You already enrolled this course");
+            if (!user.enrollCourses.includes(courseId)) {
+                await userModel.findByIdAndUpdate(userId, {
+                    $addToSet: { enrollCourses: courseId },
+                });
+
+                await courseModel.findByIdAndUpdate(courseId, {
+                    $addToSet: { students: userId },
+                    $inc: { enrolledCount: 1 },
+                });
             }
-            await userModel.findByIdAndUpdate(id, {
-                $addToSet: { enrollCourses: courseId },
-            });
-            await courseModel.findByIdAndUpdate(courseId, {
-                $addToSet: { students: userId },
-            });
-            return res.redirect(process.env.PAYOS_SUCCESS);
+
+            return res.redirect(
+                `${process.env.PAYOS_SUCCESS}?order=${orderCode}`
+            );
         } catch (err) {
             console.error("Callback xử lý thất bại:", err);
             return res.redirect(process.env.PAYOS_ERROR);
