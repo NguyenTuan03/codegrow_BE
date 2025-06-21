@@ -23,12 +23,15 @@ const userSchema = new mongoose.Schema(
             unique: true,
             trim: true,
         },
-        enrolledCourses: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Course",
-            },
-        ],
+        enrolledCourses: {
+            type: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Course",
+                },
+            ],
+            default: [],
+        },
         password: {
             type: String,
             required: true,
