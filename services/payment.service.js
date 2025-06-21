@@ -82,10 +82,10 @@ class paymentService {
                 transactionId: String(orderCode),
             });
 
-            const user = await userModel.findById(id).select("enrollCourses");
+            const user = await userModel.findById(userId).select("enrolledCourses");
             if (!user) throw new BadRequestError("User not found");
 
-            if (!user.enrolledCourses.includes(courseId)) {
+            if (!user?.enrolledCourses?.includes(courseId)) {
                 await userModel.findByIdAndUpdate(userId, {
                     $addToSet: { enrolledCourses: courseId },
                 });
