@@ -18,6 +18,10 @@ const CourseSchema = new mongoose.Schema({
         type:Number,
         default:0
     },
+    students: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     author: { 
         type: String
     },

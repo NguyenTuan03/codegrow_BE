@@ -7,9 +7,9 @@ const EnrollmentSchema = new mongoose.Schema({
         ref: "User",
         required: true,
     },
-    course: {
+    classroom: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Course",
+        ref: "Classroom",
     },
     progress: {
         type: Number,

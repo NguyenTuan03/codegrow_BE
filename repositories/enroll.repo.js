@@ -9,8 +9,8 @@ const getAllEnrollment = async ({ limit, sort, page, filter, select,expand }) =>
             path: 'user',
             select: SELECT_USER.DEFAULT
         },
-        course: {
-            path: 'course',
+        classroom: {
+            path: 'classroom',
             select: 'title category'
         }
     }
