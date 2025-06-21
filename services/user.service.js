@@ -18,7 +18,7 @@ class UserService {
     };
     static getUserById = async ({ id }) => {
         const user = await userModel.findOne({ _id: id }).populate({
-            path: "enrolledCourses",
+            path: "enrollCourses",
             select: "title description price author category",
             populate: {
                 path: "category",
