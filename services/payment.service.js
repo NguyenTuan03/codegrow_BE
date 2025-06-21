@@ -34,9 +34,10 @@ class paymentService {
             returnUrl: process.env.PAYOS_CALLBACK,
             cancelUrl: process.env.PAYOS_CANCEL,
         };
+        console.log("=== Đang dùng callback ===", process.env.PAYOS_CALLBACK);
         const orderCode = Date.now();
         const payload = {
-            orderCode: orderCode,
+            orderCode: orderCode, 
             amount: amount,
             description: `Thanh toán khóa học`,
             cancelUrl: PAYOS.cancelUrl,
@@ -98,9 +99,7 @@ class paymentService {
             return res.redirect(process.env.PAYOS_ERROR);
         }
     };
-    static cancelPayment = () => {        
-        return res.redirect(`${process.env.PAYOS_FAILED}?canceled=true`);
-    };
+    
 }
 
 module.exports = paymentService;

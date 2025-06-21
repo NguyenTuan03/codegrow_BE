@@ -79,10 +79,9 @@ router.get(
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(paymentController.getUSerById)
 );
-router.get('/payos/callback',
+router.get(
+    "/payos/callback",
     catchAsyncHandle(paymentController.payOSCallback)
-)
-router.get('/cancel',
-    catchAsyncHandle(paymentController.cancelPayment)
-)
+);
+router.get("/payos/cancel", paymentController.cancelPayment);
 module.exports = router;

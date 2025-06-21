@@ -55,15 +55,12 @@ class paymentController {
                 orderCode: req.query.orderCode,
                 status: req.query.status,
                 userId: req.userId,
-                courseId: req.query.courseId
+                courseId: req.query.courseId,
             }),
         }).send(res);
     };
-    cancelPayment = async(req,res) => {
-        new OK({
-            message: "Order has cancelled",
-            metadata: await paymentService.cancelPayment(),
-        }).send(res);
-    }
+    cancelPayment = (req, res) => {
+        return res.redirect(`${process.env.PAYOS_FAILED}?canceled=true`);
+    };
 }
 module.exports = new paymentController();
