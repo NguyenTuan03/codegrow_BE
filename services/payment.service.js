@@ -5,6 +5,7 @@ const paymentModel = require("../models/payment.model");
 const { generateSignature } = require("../utils/generateSignature.util");
 const userModel = require("../models/user.model");
 const courseModel = require("../models/course.model");
+const crypto = require("crypto");
 class paymentService {
     static getUSerById = async ({ userId }) => {
         if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -36,17 +37,28 @@ class paymentService {
             returnUrl: process.env.PAYOS_CALLBACK,
             cancelUrl: process.env.PAYOS_CANCEL,
         };
-        console.log("=== Đang dùng callback ===", process.env.PAYOS_CALLBACK);
+
         const orderCode = Date.now();
-        const extraData = Buffer.from(JSON.stringify({ userId, courseId })).toString("base64");
+        const extraData = Buffer.from(
+            JSON.stringify({ userId, courseId })
+        ).toString("base64");
+
+        // ✅ Đầu tiên khai báo payload
         const payload = {
-            orderCode: orderCode,
-            amount: amount,
-            description: `Thanh toán khóa học`,
-            cancelUrl: PAYOS.cancelUrl,
+            amount,
+            orderCode,
+            description: "Thanh toán khóa học",
             returnUrl: PAYOS.returnUrl,
+            cancelUrl: PAYOS.cancelUrl,
+            extraData,
         };
 
+        // ✅ Sau đó mới in ra payload
+        Object.keys(payload).forEach((k) => {
+            console.log(`${k}: ${payload[k]}`);
+        });
+
+        // ✅ Tạo signature sau khi payload đã có
         const signature = generateSignature(payload, PAYOS.checksumKey);
 
         const headers = {
@@ -63,6 +75,7 @@ class paymentService {
             },
             { headers }
         );
+
         const payOSRes = res.data?.data;
         if (!payOSRes?.checkoutUrl) {
             throw new Error("Tạo link thanh toán PayOS thất bại");
@@ -76,15 +89,19 @@ class paymentService {
             if (paymentInfo.status !== "PAID") {
                 return res.redirect(process.env.PAYOS_FAILED);
             }
-            console.log(userId);
-            console.log(courseId);
+            console.log('user =',userId);
+            console.log('course =',courseId);
             await paymentModel.create({
                 user: userId,
                 amount: paymentInfo.amount,
                 transactionId: String(orderCode),
+                status: "completed",
             });
-            
-            const user = await userModel.findById(userId).select("enrolledCourses");
+
+            const user = await userModel
+                .findById(userId)
+                .select("enrolledCourses");
+
             if (!user) throw new BadRequestError("User not found");
 
             if (!user?.enrolledCourses?.includes(courseId)) {

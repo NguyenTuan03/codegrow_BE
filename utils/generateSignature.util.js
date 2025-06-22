@@ -1,10 +1,18 @@
-const crypto = require('crypto')
+const crypto = require("crypto");
+
 function generateSignature(data, checksumKey) {
-    const sortedKeys = Object.keys(data).sort();
-    const signData = sortedKeys.map((key) => `${key}=${data[key]}`).join("&");
+    const rawData =
+        `amount=${data.amount}` +
+        `&cancelUrl=${data.cancelUrl}` +
+        `&description=${data.description}` +
+        // `&extraData=${data.extraData}` +
+        `&orderCode=${data.orderCode}` +
+        `&returnUrl=${data.returnUrl}`;
+    console.log('raw data =', rawData);
+    
     return crypto
         .createHmac("sha256", checksumKey)
-        .update(signData)
+        .update(rawData)
         .digest("hex");
 }
 module.exports = { generateSignature };
