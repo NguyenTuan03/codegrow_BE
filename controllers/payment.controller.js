@@ -49,18 +49,21 @@ class paymentController {
         }).send(res);
     };
     payOSCallback = async (req, res) => {
-        new OK({
-            message: "payos callback sucessfully",
-            metadata: await paymentService.payOSCallback({
+        try {
+            const { redirectUrl } = await paymentService.payOSCallback({
                 orderCode: req.query.orderCode,
                 status: req.query.status,
                 userId: req.query.userId,
                 courseId: req.query.courseId,
-            }),
-        }).send(res);
+            });
+            return res.redirect(redirectUrl);
+        } catch (err) {
+            console.error("Callback xử lý thất bại:", err);
+            return res.redirect(process.env.PAYOS_ERROR);
+        }
     };
     cancelPayment = (req, res) => {
         return res.redirect(`${process.env.PAYOS_FAILED}?canceled=true`);
     };
-}     
+}
 module.exports = new paymentController();
