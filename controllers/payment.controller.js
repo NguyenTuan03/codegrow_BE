@@ -54,7 +54,7 @@ class paymentController {
             metadata: await paymentService.payOSCallback({
                 orderCode: req.query.orderCode,
                 status: req.query.status,
-                userId: req.userId,
+                userId: req.query.userId,
                 courseId: req.query.courseId,
             }),
         }).send(res);

@@ -135,7 +135,7 @@ class UserService {
             // Thêm user vào course.students
             await courseModel.findByIdAndUpdate(courseId, {
                 $addToSet: { students: id },
-                $inc: { enrolledCount: 1 }, // ✅ Tăng số lượng học viên
+                $inc: { enrolledCount: 1 },
             });
 
             // Debug sau cập nhật
