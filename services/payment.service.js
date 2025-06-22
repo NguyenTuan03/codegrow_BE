@@ -89,13 +89,14 @@ class paymentService {
             return { redirectUrl: process.env.PAYOS_FAILED };
         }
 
+        console.log('userId = ',userId)
+        console.log('courseId = ',courseId)
         await paymentModel.create({
             user: userId,
             amount: paymentInfo.amount,
             transactionId: String(orderCode),
             status: "completed",
         });
-
         const user = await userModel.findById(userId).select("enrolledCourses");
         if (!user) throw new BadRequestError("User not found");
 
