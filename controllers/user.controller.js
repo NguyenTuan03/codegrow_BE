@@ -99,5 +99,14 @@ class UserController {
             }),
         }).send(res);
     };
+    getCourseInfo = async (req,res) => {
+        new OK({
+            message: 'response successful',
+            metadata: await UserService.getCourseInfo({
+                promt: req.body.promt, 
+                courseId: req.body.courseId
+            })
+        }).send(res);
+    }
 }
 module.exports = new UserController();
