@@ -1,12 +1,15 @@
-var express = require('express');
-const { catchAsyncHandle } = require('../middlewares/error.middleware');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const userController = require('../controllers/user.controller');
-const {checkRoles, checkUserOrAdmin} = require('../middlewares/role.middleware');
-const { USER_ROLES } = require('../configs/user.config');
+var express = require("express");
+const { catchAsyncHandle } = require("../middlewares/error.middleware");
+const AuthMiddleware = require("../middlewares/auth.middleware");
+const userController = require("../controllers/user.controller");
+const {
+    checkRoles,
+    checkUserOrAdmin,
+} = require("../middlewares/role.middleware");
+const { USER_ROLES } = require("../configs/user.config");
 var router = express.Router();
 
-const multer = require('multer');
+const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
@@ -27,9 +30,7 @@ const upload = multer({ storage });
  *       200:
  *         description: Get all users successfully
  */
-router.get('/',    
-    catchAsyncHandle(userController.getAllUsers)
-)
+router.get("/", catchAsyncHandle(userController.getAllUsers));
 /**
  * @swagger
  * /users/{id}:
@@ -47,9 +48,7 @@ router.get('/',
  *       200:
  *         description: Get user successfully
  */
-router.get('/:id',
-    catchAsyncHandle(userController.getUserById)
-)
+router.get("/:id", catchAsyncHandle(userController.getUserById));
 /**
  * @swagger
  * /users:
@@ -77,11 +76,12 @@ router.get('/:id',
  *       201:
  *         description: Create user successfully
  */
-router.post('/',
+router.post(
+    "/",
     catchAsyncHandle(AuthMiddleware),
-    checkRoles({requiredRoles: [USER_ROLES.ADMIN]}),
+    checkRoles({ requiredRoles: [USER_ROLES.ADMIN] }),
     catchAsyncHandle(userController.createUser)
-)
+);
 /**
  * @swagger
  * /users/{id}:
@@ -113,12 +113,13 @@ router.post('/',
  *       200:
  *         description: Update user successfully
  */
-router.put('/:id',
-    upload.single('avatar'),
+router.put(
+    "/:id",
+    upload.single("avatar"),
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(checkUserOrAdmin),
     catchAsyncHandle(userController.updateUser)
-)
+);
 
 /**
  * @swagger
@@ -139,11 +140,12 @@ router.put('/:id',
  *       200:
  *         description: Delete user successfully
  */
-router.delete('/:id',
+router.delete(
+    "/:id",
     catchAsyncHandle(AuthMiddleware),
-    checkRoles({requiredRoles:[USER_ROLES.ADMIN]}),
+    checkRoles({ requiredRoles: [USER_ROLES.ADMIN] }),
     catchAsyncHandle(userController.deleteUser)
-)
+);
 /**
  * @swagger
  * /users/enroll:
@@ -217,14 +219,15 @@ router.delete('/:id',
  *                   type: string
  *                   example: Insufficient balance to enroll in this course
  */
-router.post('/enroll',
+router.post(
+    "/enroll",
     catchAsyncHandle(AuthMiddleware),
-    checkRoles({requiredRoles:[USER_ROLES.USER]}),
+    checkRoles({ requiredRoles: [USER_ROLES.USER] }),
     catchAsyncHandle(userController.enrollCourse)
-)
+);
 
 /**
- * @swagger 
+ * @swagger
  * /users/enroll-class:
  *   post:
  *     summary: Submit student registration form for class consultation
@@ -251,11 +254,12 @@ router.post('/enroll',
  *       200:
  *         description: Form submitted successfully
  */
-router.post('/enroll-class',
+router.post(
+    "/enroll-class",
     catchAsyncHandle(AuthMiddleware),
-    checkRoles({requiredRoles:[USER_ROLES.USER]}),
+    checkRoles({ requiredRoles: [USER_ROLES.USER] }),
     catchAsyncHandle(userController.enrollClass)
-)
+);
 /**
  * @swagger
  * /users/enroll-class/pending:
@@ -266,9 +270,10 @@ router.post('/enroll-class',
  *       200:
  *         description: List of pending registrations
  */
-router.get('/enroll-class/pending',
+router.get(
+    "/enroll-class/pending",
     catchAsyncHandle(userController.getListConsultedUser)
-)
+);
 /**
  * @swagger
  * /users/progress/lesson-complete:
@@ -293,10 +298,11 @@ router.get('/enroll-class/pending',
  *       200:
  *         description: Lesson marked as completed
  */
-router.post('/progress/lesson-complete',
-    catchAsyncHandle(AuthMiddleware),    
+router.post(
+    "/progress/lesson-complete",
+    catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(userController.lessonComplete)
-)
+);
 /**
  * @swagger
  * /users/progress/quizz-complete:
@@ -322,10 +328,11 @@ router.post('/progress/lesson-complete',
  *         description: Quiz marked as completed
  */
 
-router.post('/progress/quizz-complete',
-    catchAsyncHandle(AuthMiddleware),    
+router.post(
+    "/progress/quizz-complete",
+    catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(userController.quizzComplete)
-)
+);
 /**
  * @swagger
  * /users/{id}/progress:
@@ -351,8 +358,57 @@ router.post('/progress/quizz-complete',
  *       200:
  *         description: Progress retrieved
  */
-router.get('/:id/progress', 
-    catchAsyncHandle(AuthMiddleware),    
+router.get(
+    "/:id/progress",
+    catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(userController.getProgress)
-)
+);
+/**
+ * @swagger
+ * /chat:
+ *   post:
+ *     summary: Gửi câu hỏi về khóa học cho AI và nhận câu trả lời diễn giải.
+ *     tags:
+ *       - AI Chat
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - promt
+ *               - courseId
+ *             properties:
+ *               promt:
+ *                 type: string
+ *                 example: "Khóa học này phù hợp với người mới không?"
+ *                 description: Câu hỏi của người dùng.
+ *               courseId:
+ *                 type: string
+ *                 example: "662fc4e99e68f54c2c4d12e0"
+ *                 description: ID khóa học trong database.
+ *     responses:
+ *       200:
+ *         description: Thành công, trả về câu trả lời từ AI.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: response successful
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 metadata:
+ *                   type: string
+ *                   example: "Khóa học này rất phù hợp cho người mới bắt đầu..."
+ *       400:
+ *         description: Thiếu dữ liệu đầu vào hoặc định dạng sai.
+ *       500:
+ *         description: Lỗi hệ thống hoặc lỗi khi gọi GPT API.
+ */
+router.post("/chat", catchAsyncHandle(userController.getCourseInfo));
 module.exports = router;

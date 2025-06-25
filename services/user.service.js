@@ -13,6 +13,7 @@ const { s3, createUrlS3, uploadImage } = require("../utils/s3client");
 const { v4: uuidv4 } = require("uuid");
 const enrollModel = require("../models/enroll.model");
 const { default: mongoose } = require("mongoose");
+const { default: axios } = require("axios");
 class UserService {
     static getAllUser = async ({ limit, sort, page, filter, select }) => {
         return await getAllUsers({ limit, sort, page, filter, select });
@@ -246,6 +247,70 @@ class UserService {
             lastLesson: progress?.lastLesson || null,
             progress: percent,
         };
+    };
+    static getCourseInfoDetail = async (courseId) => {
+        const course = await courseModel.findById(courseId).lean();
+
+        if (!course) throw new Error("Course not found");
+
+        return `
+            Tiêu đề: ${course.title}
+            Mô tả: ${course.description}
+            Nội dung chính: ${course.content}
+            Thời lượng: ${course.duration}
+            Học phí: ${course.price} VNĐ
+        `;
+    };
+    static getCourseInfo = async ({ promt, courseId }) => {
+        try {
+            console.log(promt, typeof promt);
+
+            if (!promt || typeof promt !== "string") {
+                throw new Error("Prompt không hợp lệ – cần là chuỗi");
+            }
+            const courseInfo = await UserService.getCourseInfoDetail(courseId); // bạn tự viết hàm này
+
+            // B2: Gọi OpenRouter API
+            const response = await axios.post(
+                process.env.URL_CHAT,
+                {
+                    model: "openai/gpt-4.1-mini",
+                    max_tokens: 1000,
+                    messages: [
+                        {
+                            role: "system",
+                            content: `Bạn là một tư vấn viên giáo dục chuyên nghiệp, nhiệm vụ của bạn là giới thiệu khóa học cho người học một cách gần gũi, rõ ràng và dễ hiểu. Dưới đây là thông tin khóa học cần giới thiệu:
+
+${courseInfo}
+
+Hãy diễn giải nội dung này theo cách tự nhiên, giống như đang tư vấn thật. Nếu dữ liệu còn thiếu, hãy nhắc khéo người dùng cập nhật thêm.`,
+                        },
+                        {
+                            role: "user",
+                            content: promt,
+                        },
+                    ],
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.OPEN_ROUTER_API_KEY}`,
+                        "Content-Type": "application/json",
+                    },
+                    timeout: 10000,
+                }
+            );
+
+            console.log(response);
+            const reply = response.data.choices[0].message.content;
+
+            return reply;
+        } catch (err) {
+            console.error(
+                "Lỗi từ GPT API:",
+                err.response?.data || err.message || err
+            );
+            throw new Error("Lỗi gọi GPT");
+        }
     };
 }
 module.exports = UserService;
