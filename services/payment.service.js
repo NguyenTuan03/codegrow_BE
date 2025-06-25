@@ -85,12 +85,13 @@ class paymentService {
     };
     static payOSCallback = async ({ orderCode, status, userId, courseId }) => {
         const paymentInfo = await getPaymentFromPayOS(orderCode);
-        if (paymentInfo.status !== "PAID") {
+        console.log("status = ", paymentInfo?.status);
+        if (paymentInfo?.status !== "PAID") {
             return { redirectUrl: process.env.PAYOS_FAILED };
         }
 
-        console.log('userId = ',userId)
-        console.log('courseId = ',courseId)
+        console.log("userId = ", userId);
+        console.log("courseId = ", courseId);
         await paymentModel.create({
             user: userId,
             amount: paymentInfo.amount,
