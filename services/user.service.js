@@ -263,14 +263,28 @@ class UserService {
     };
     static getCourseInfo = async ({ promt, courseId }) => {
         try {
-            console.log(promt, typeof promt);
-
             if (!promt || typeof promt !== "string") {
                 throw new Error("Prompt không hợp lệ – cần là chuỗi");
             }
-            const courseInfo = await UserService.getCourseInfoDetail(courseId); // bạn tự viết hàm này
 
-            // B2: Gọi OpenRouter API
+            // Tìm kiếm theo tiêu đề gần đúng (không phân biệt hoa thường)
+            const course = await courseModel
+                .findOne({ title: { $regex: new RegExp(promt, "i") } })
+                .lean();
+
+            let courseInfo = "";
+
+            if (!course) {
+                courseInfo = `Không tìm thấy thông tin khóa học với tên "${promt}". Vui lòng kiểm tra lại tên khóa học.`;
+            } else {
+                courseInfo = `
+                Tiêu đề: ${course.title}
+                Mô tả: ${course.description || "Chưa cập nhật"}
+                Nội dung chính: ${course.content || "Chưa cập nhật"}
+                Thời lượng: ${course.duration || "Chưa cập nhật"}
+                Học phí: ${course.price ?? "Chưa cập nhật"} VNĐ
+            `;
+            }
             const response = await axios.post(
                 process.env.URL_CHAT,
                 {
