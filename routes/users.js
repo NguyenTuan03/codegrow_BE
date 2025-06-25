@@ -378,16 +378,11 @@ router.get(
  *             type: object
  *             required:
  *               - promt
- *               - courseId
  *             properties:
  *               promt:
  *                 type: string
- *                 example: "Khóa học này phù hợp với người mới không?"
- *                 description: Câu hỏi của người dùng.
- *               courseId:
- *                 type: string
- *                 example: "662fc4e99e68f54c2c4d12e0"
- *                 description: ID khóa học trong database.
+ *                 example: "Giới thiệu giúp tôi về khóa học Lập trình JavaScript cơ bản"
+ *                 description: Câu hỏi hoặc yêu cầu của người dùng, có thể bao gồm tên khóa học.
  *     responses:
  *       200:
  *         description: Thành công, trả về câu trả lời từ AI.
@@ -404,7 +399,7 @@ router.get(
  *                   example: 200
  *                 metadata:
  *                   type: string
- *                   example: "Khóa học này rất phù hợp cho người mới bắt đầu..."
+ *                   example: "Khóa học Lập trình JavaScript cơ bản sẽ hướng dẫn bạn từ những kiến thức nền tảng..."
  *       400:
  *         description: Thiếu dữ liệu đầu vào hoặc định dạng sai.
  *       500:
