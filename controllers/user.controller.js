@@ -95,18 +95,35 @@ class UserController {
             message: "Get user's progress successfully",
             metadata: await UserService.getUserProgress({
                 id: req.userId,
-                ...req.body
+                ...req.body,
             }),
         }).send(res);
     };
-    getCourseInfo = async (req,res) => {
+    getCourseInfo = async (req, res) => {
         new OK({
-            message: 'response successful',
+            message: "response successful",
             metadata: await UserService.getCourseInfo({
-                promt: req.body.promt, 
-                courseId: req.body.courseId
-            })
+                promt: req.body.promt,
+                courseId: req.body.courseId,
+            }),
         }).send(res);
-    }
+    };
+    getAutoFeedback = async (req, res) => {
+        new OK({
+            message: "response successful",
+            metadata: await UserService.getAutoFeedback({
+                promt: req.body.promt,
+                userId: req.userId,
+            }),
+        }).send(res);
+    };
+    suggestPractice = async (req, res) => {
+        new OK({
+            message: "response successful",
+            metadata: await UserService.suggestPractice({
+                userId: req.userId,
+            }),
+        }).send(res);
+    };
 }
 module.exports = new UserController();

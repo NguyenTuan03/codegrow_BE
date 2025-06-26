@@ -14,6 +14,7 @@ const { v4: uuidv4 } = require("uuid");
 const enrollModel = require("../models/enroll.model");
 const { default: mongoose } = require("mongoose");
 const { default: axios } = require("axios");
+const quizzModel = require("../models/quizz.model");
 class UserService {
     static getAllUser = async ({ limit, sort, page, filter, select }) => {
         return await getAllUsers({ limit, sort, page, filter, select });
@@ -324,6 +325,139 @@ Hãy diễn giải nội dung này theo cách tự nhiên, giống như đang t�
                 err.response?.data || err.message || err
             );
             throw new Error("Lỗi gọi GPT");
+        }
+    };
+    static getAutoFeedback = async ({ userId, promt }) => {
+        try {
+            if (!userId || !promt) {
+                return new BadRequestError("Thiếu userId hoặc promt");
+            }
+
+            const progress = await userProgressModel
+                .findOne({ user: userId })
+                .populate("course")
+                .populate("completedLessons")
+                .populate("lastLesson");
+
+            if (!progress) {
+                return new BadRequestError("Không tìm thấy tiến độ học");
+            }
+
+            const totalLessons = await lessonModel.countDocuments({
+                course: progress.course._id,
+            });
+            const completed = progress.completedLessons.length;
+            const lastLessonTitle =
+                progress.lastLesson?.title || "Không xác định";
+
+            const summary = `
+Bạn đang học khóa: ${progress.course.title}
+- Bài gần nhất: ${lastLessonTitle}
+- Đã hoàn thành: ${completed}/${totalLessons} bài học
+`;
+
+            const gptResponse = await axios.post(
+                process.env.URL_CHAT,
+                {
+                    model: "openai/gpt-4.1-mini",
+                    max_tokens: 1000,
+                    messages: [
+                        {
+                            role: "system",
+                            content: `Bạn là trợ lý học tập thông minh. Dưới đây là thông tin học tập của người dùng:
+
+${summary}
+
+Hãy trả lời câu hỏi bên dưới một cách tự nhiên, thân thiện và phù hợp với tiến độ hiện tại.`,
+                        },
+                        {
+                            role: "user",
+                            content: promt,
+                        },
+                    ],
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.OPEN_ROUTER_API_KEY}`,
+                        "Content-Type": "application/json",
+                    },
+                    timeout: 10000,
+                }
+            );
+
+            const reply = gptResponse.data.choices[0].message.content;
+
+            return reply;
+        } catch (err) {
+            console.error(
+                "Lỗi từ GPT API:",
+                err.response?.data || err.message || err
+            );
+            throw new Error("Lỗi gọi GPT");
+        }
+    };
+    static suggestPractice = async ({ userId }) => {
+        try {
+            if (!userId) return new BadRequestError('Thiếu userId')
+
+            const weakResults = await quizzModel.find({
+                user: userId,
+                score: { $lt: 7 },
+            })
+                .populate("lesson")
+                .sort({ score: 1 });
+
+            if (!weakResults.length) {
+                return "Bạn không có điểm yếu rõ ràng, cứ tiếp tục học nhé!";
+            }
+
+            // Tổng hợp chủ đề yếu
+            const weakTopics = weakResults
+                .map((q) => q.lesson?.title)
+                .filter(Boolean)
+                .slice(0, 3); // lấy 3 bài yếu nhất
+
+            const promptToAI = `
+Người học có điểm số thấp ở các chủ đề sau:
+- ${weakTopics.join("\n- ")}
+
+Hãy gợi ý 3 bài luyện tập hoặc câu hỏi nhỏ giúp họ luyện lại các chủ đề này. Bắt đầu từ dễ đến khó, và trình bày thân thiện.
+`;
+
+            const gptResponse = await axios.post(
+                process.env.URL_CHAT,
+                {
+                    model: "openai/gpt-4.1-mini",
+                    max_tokens: 1000,
+                    messages: [
+                        {
+                            role: "system",
+                            content: `Bạn là một trợ giảng AI. Hãy tạo gợi ý bài tập luyện tập cá nhân hóa.`,
+                        },
+                        {
+                            role: "user",
+                            content: promptToAI,
+                        },
+                    ],
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.OPEN_ROUTER_API_KEY}`,
+                        "Content-Type": "application/json",
+                    },
+                    timeout: 10000,
+                }
+            );
+
+            const reply = gptResponse.data.choices[0].message.content;
+
+            return reply;
+        } catch (err) {
+            console.error(
+                "Lỗi suggest-practice:",
+                err.response?.data || err.message
+            );
+            return res.status(500).json({ message: "Lỗi hệ thống hoặc GPT" });
         }
     };
 }

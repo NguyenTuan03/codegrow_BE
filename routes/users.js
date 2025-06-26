@@ -365,7 +365,7 @@ router.get(
 );
 /**
  * @swagger
- * /chat:
+ * /users/chat:
  *   post:
  *     summary: Gửi câu hỏi về khóa học cho AI và nhận câu trả lời diễn giải.
  *     tags:
@@ -407,3 +407,91 @@ router.get(
  */
 router.post("/chat", catchAsyncHandle(userController.getCourseInfo));
 module.exports = router;
+/**
+ * @swagger
+ * /users/auto-feedback:
+ *   post:
+ *     summary: Tự động phản hồi câu hỏi của người học dựa trên tiến độ học tập.
+ *     tags:
+ *       - AI Learning
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - prompt
+ *             properties:
+ *               promt:
+ *                 type: string
+ *                 description: Câu hỏi của người học (có thể là về nội dung tiếp theo, mục tiêu học, v.v.)
+ *                 example: "Tôi có nên học tiếp lên React không?"
+ *     responses:
+ *       200:
+ *         description: Thành công. Trả về phản hồi của AI dựa trên tiến độ học tập.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: response successful
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 metadata:
+ *                   type: string
+ *                   example: "Dựa trên tiến độ hiện tại, bạn đã nắm vững JavaScript cơ bản và hoàn toàn có thể bắt đầu học React..."
+ *       400:
+ *         description: Thiếu thông tin đầu vào hoặc dữ liệu không hợp lệ.
+ *       404:
+ *         description: Không tìm thấy dữ liệu tiến độ học của người dùng.
+ *       500:
+ *         description: Lỗi nội bộ khi xử lý hoặc gọi GPT API.
+ */
+router.post(
+    "/auto-feedback",
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(userController.getAutoFeedback)
+);
+/**
+ * @swagger
+ * /users/suggest-practice:
+ *   post:
+ *     summary: Gợi ý bài luyện tập dựa trên điểm yếu học tập.
+ *     tags:
+ *       - AI Learning
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: "665fa123bcde45..."
+ *                 description: ID của người học.
+ *     responses:
+ *       200:
+ *         description: Gợi ý thành công.
+ *       400:
+ *         description: Thiếu userId.
+ *       500:
+ *         description: Lỗi hệ thống hoặc GPT.
+ */
+
+router.post(
+    "/suggest-practice",
+    catchAsyncHandle(AuthMiddleware),
+    catchAsyncHandle(userController.suggestPractice)
+);
