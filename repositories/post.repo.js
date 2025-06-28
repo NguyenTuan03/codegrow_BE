@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const { SELECT_COURSE, SELECT_USER } = require("../configs/user.config");
 const postModel = require("../models/post.model");
 
