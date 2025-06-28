@@ -50,17 +50,17 @@ class PostService {
     static createPost = async ({
         title,
         content,
-        classroom,
+        classId,
         author,
         tags,
         attachments,
     }) => {
-        if (!title || !content || !classroom) {
+        if (!title || !content || !classId) {
             throw new BadRequestError(
-                "Missing any required fields: title, content, classroom"
+                "Missing any required fields: title, content, classId"
             );
         }
-        const classExists = await classroomModel.findById(classroom);
+        const classExists = await classroomModel.findById(classId);
         if (!classExists) {
             throw new NotFoundRequestError("class not found");
         }

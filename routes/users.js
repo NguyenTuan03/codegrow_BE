@@ -458,7 +458,7 @@ router.post(
     "/auto-feedback",
     catchAsyncHandle(AuthMiddleware),
     catchAsyncHandle(userController.getAutoFeedback)
-);
+); 
 /**
  * @swagger
  * /users/suggest-practice:
