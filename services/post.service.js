@@ -1,5 +1,8 @@
 const { SELECT_COURSE, SELECT_USER } = require("../configs/user.config");
-const { BadRequestError, NotFoundRequestError } = require("../core/responses/error.response");
+const {
+    BadRequestError,
+    NotFoundRequestError,
+} = require("../core/responses/error.response");
 const classroomModel = require("../models/classroom.model");
 const postModel = require("../models/post.model");
 const userModel = require("../models/user.model");
@@ -7,7 +10,7 @@ const { getAllPosts } = require("../repositories/post.repo");
 const { createUrlS3, s3, uploadImage } = require("../utils/s3client");
 const { v4: uuidv4 } = require("uuid");
 class PostService {
-    static getAllPost = async ({
+    static getAllPosts = async ({
         limit,
         sort,
         page,
@@ -23,29 +26,6 @@ class PostService {
             select,
             expand,
         });
-    };
-    getAllPosts = async (req, res) => {
-        const filter = {
-            isDeleted: false,
-        };
-
-        if (req.query.class) {
-            filter.class = req.query.class;
-        }
-
-        const posts = await PostService.getAllPost({
-            limit: req.query.limit || 1000,
-            sort: req.query.sort || "ctime",
-            page: req.query.page || 1,
-            filter,
-            select: req.query.select || SELECT_POST.FULL,
-            expand: req.query.expand || "",
-        });
-
-        new OK({
-            message: "Get all posts successfully",
-            metadata: posts,
-        }).send(res);
     };
     static createPost = async ({
         title,
