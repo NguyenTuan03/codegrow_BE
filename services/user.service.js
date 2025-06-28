@@ -15,6 +15,7 @@ const enrollModel = require("../models/enroll.model");
 const { default: mongoose } = require("mongoose");
 const { default: axios } = require("axios");
 const quizzModel = require("../models/quizz.model");
+const submissionModel = require("../models/submission.model");
 class UserService {
     static getAllUser = async ({ limit, sort, page, filter, select }) => {
         return await getAllUsers({ limit, sort, page, filter, select });
@@ -397,68 +398,95 @@ Hãy trả lời câu hỏi bên dưới một cách tự nhiên, thân thiện 
         }
     };
     static suggestPractice = async ({ userId }) => {
-        try {
-            if (!userId) return new BadRequestError('Thiếu userId')
+        if (!userId) throw new Error("Thiếu userId");
 
-            const weakResults = await quizzModel.find({
+        const failedSubmissions = await submissionModel
+            .find({
                 user: userId,
-                score: { $lt: 7 },
+                isPassed: false,
             })
-                .populate("lesson")
-                .sort({ score: 1 });
+            .populate({
+                path: "quiz",
+                populate: { path: "lesson" },
+            })
+            .sort({ createdAt: -1 });
 
-            if (!weakResults.length) {
-                return "Bạn không có điểm yếu rõ ràng, cứ tiếp tục học nhé!";
+        const failedQuizIds = failedSubmissions.map((s) =>
+            s?.quiz?._id?.toString()
+        );
+        if (!failedSubmissions.length) {
+            return "Bạn không có bài code nào sai gần đây. Tiếp tục học tốt nhé!";
+        }
+        const weakLessons = failedSubmissions
+            .map((s) => s.quiz?.lesson)
+            .filter(Boolean)
+            .slice(0, 3);
+        const questions = await quizzModel
+            .find({
+                lesson: { $in: weakLessons.map((l) => l.id) },
+            })
+            .lean();
+
+        const weakQuestions = questions.filter((q) =>
+            failedQuizIds.includes(q?._id?.toString())
+        );
+
+        const formattedQuestions = weakQuestions.map((q, i) => {
+            if (q.type === "multiple_choice") {
+                const options = q.options
+                    .map(
+                        (opt, idx) =>
+                            `${String.fromCharCode(65 + idx)}. ${opt.text}`
+                    )
+                    .join("\n");
+
+                return `Câu ${i + 1}: ${q.questionText}\n${options}`;
+            } else {
+                return `Câu ${i + 1}: Viết code (${q.language}) cho yêu cầu: ${
+                    q.questionText
+                }`;
             }
+        });
 
-            // Tổng hợp chủ đề yếu
-            const weakTopics = weakResults
-                .map((q) => q.lesson?.title)
-                .filter(Boolean)
-                .slice(0, 3); // lấy 3 bài yếu nhất
+        const promptToAI = `
+Người học đã làm sai các câu hỏi sau đây:
 
-            const promptToAI = `
-Người học có điểm số thấp ở các chủ đề sau:
-- ${weakTopics.join("\n- ")}
+${formattedQuestions.join("\n\n")}
 
-Hãy gợi ý 3 bài luyện tập hoặc câu hỏi nhỏ giúp họ luyện lại các chủ đề này. Bắt đầu từ dễ đến khó, và trình bày thân thiện.
+Hãy chọn 3 câu hỏi phù hợp để người học luyện tập lại. 
+- Giải thích ngắn gọn vì sao chọn chúng
+- Sắp xếp từ dễ đến khó
+- Động viên người học theo hướng tích cực
 `;
 
-            const gptResponse = await axios.post(
-                process.env.URL_CHAT,
-                {
-                    model: "openai/gpt-4.1-mini",
-                    max_tokens: 1000,
-                    messages: [
-                        {
-                            role: "system",
-                            content: `Bạn là một trợ giảng AI. Hãy tạo gợi ý bài tập luyện tập cá nhân hóa.`,
-                        },
-                        {
-                            role: "user",
-                            content: promptToAI,
-                        },
-                    ],
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${process.env.OPEN_ROUTER_API_KEY}`,
-                        "Content-Type": "application/json",
+        const gptResponse = await axios.post(
+            process.env.URL_CHAT,
+            {
+                model: "openai/gpt-4.1-mini",
+                max_tokens: 1000,
+                messages: [
+                    {
+                        role: "system",
+                        content: `Bạn là trợ giảng AI.`,
                     },
-                    timeout: 10000,
-                }
-            );
+                    {
+                        role: "user",
+                        content: promptToAI,
+                    },
+                ],
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.OPEN_ROUTER_API_KEY}`,
+                    "Content-Type": "application/json",
+                },
+                timeout: 10000,
+            }
+        );
 
-            const reply = gptResponse.data.choices[0].message.content;
-
-            return reply;
-        } catch (err) {
-            console.error(
-                "Lỗi suggest-practice:",
-                err.response?.data || err.message
-            );
-            return res.status(500).json({ message: "Lỗi hệ thống hoặc GPT" });
-        }
+        const reply =
+            gptResponse?.data?.choices?.[0]?.message?.content ??
+            "Không nhận được phản hồi từ AI.";
     };
 }
 module.exports = UserService;
