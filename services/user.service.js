@@ -379,7 +379,7 @@ Hãy trả lời câu hỏi bên dưới một cách tự nhiên, thân thiện 
                 },
                 {
                     headers: {
-                        Authorization: `Bearer ${process.env.OPEN_ROUTER_API_KEY}`,
+                        Authorization: `Bearer ${process.env.OPEN_ROUTER_PROGRESS_WATCH}`,
                         "Content-Type": "application/json",
                     },
                     timeout: 10000,
@@ -430,7 +430,8 @@ Hãy trả lời câu hỏi bên dưới một cách tự nhiên, thân thiện 
         const weakQuestions = questions.filter((q) =>
             failedQuizIds.includes(q?._id?.toString())
         );
-
+        console.log('weak question = ',weakQuestions);
+        
         const formattedQuestions = weakQuestions.map((q, i) => {
             if (q.type === "multiple_choice") {
                 const options = q.options
@@ -447,7 +448,8 @@ Hãy trả lời câu hỏi bên dưới một cách tự nhiên, thân thiện 
                 }`;
             }
         });
-
+        console.log('question = ', formattedQuestions);
+        
         const promptToAI = `
 Người học đã làm sai các câu hỏi sau đây:
 
@@ -467,7 +469,7 @@ Hãy chọn 3 câu hỏi phù hợp để người học luyện tập lại.
                 messages: [
                     {
                         role: "system",
-                        content: `Bạn là trợ giảng AI.`,
+                        content: `Bạn là trợ giảng AI, bạn sẽ nói các điểm yếu, điểm mạnh của học viên là gì. Sau đó, điều chỉnh lộ trình phù hợp cho học viên bằng cách khuyên học viên có nên học lại hoặc làm lại bài tập này hoặc video này hay không.`,
                     },
                     {
                         role: "user",
@@ -477,16 +479,17 @@ Hãy chọn 3 câu hỏi phù hợp để người học luyện tập lại.
             },
             {
                 headers: {
-                    Authorization: `Bearer ${process.env.OPEN_ROUTER_API_KEY}`,
+                    Authorization: `Bearer ${process.env.OPEN_ROUTER_SUGGEST}`,
                     "Content-Type": "application/json",
                 },
                 timeout: 10000,
             }
         );
-
+        console.log('res=  ',gptResponse);        
         const reply =
             gptResponse?.data?.choices?.[0]?.message?.content ??
             "Không nhận được phản hồi từ AI.";
+        return reply;
     };
 }
 module.exports = UserService;
