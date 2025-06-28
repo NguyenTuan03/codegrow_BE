@@ -3,7 +3,7 @@ const { default: mongoose } = require("mongoose");
 const SubmissionSchema = new mongoose.Schema({
     quiz: { 
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Quiz' 
+        ref: 'Quizz' 
     },
     user: { 
         type: mongoose.Schema.Types.ObjectId, 

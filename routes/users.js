@@ -489,7 +489,6 @@ router.post(
  *       500:
  *         description: Lỗi hệ thống hoặc GPT.
  */
-
 router.post(
     "/suggest-practice",
     catchAsyncHandle(AuthMiddleware),
