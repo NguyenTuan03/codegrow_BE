@@ -12,7 +12,9 @@ class postController {
                 page: req.query.page || 1,
                 filter: {
                     isDeleted: false,
+                    // classroom: req.query.classroom,
                 },
+                select: SELECT_POST.FULL,
                 expand: req.query.expand || "",
             }),
         }).send(res);

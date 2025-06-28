@@ -4,12 +4,15 @@ const postModel = require("../models/post.model");
 const getAllPosts = async ({ limit, sort, page, filter, select, expand }) => {
     const skip = (page - 1) * limit;
     const sortBy = sort === "ctime" ? { _id: -1 } : { _id: 1 };
+    if (filter.classroom && typeof filter.classroom === "string") {
+        filter.classroom = new mongoose.Types.ObjectId(filter.classroom);
+    }
     const populateOptions = {
-        author: {
-            path: "course",
-            select: SELECT_COURSE.FULL,
+        classroom: {
+            path: "classroom",
+            select: "title description",
         },
-        category: {
+        author: {
             path: "author",
             select: SELECT_USER.DEFAULT,
         },
@@ -30,7 +33,7 @@ const getAllPosts = async ({ limit, sort, page, filter, select, expand }) => {
         .lean();
 
     const totalPosts = await postModel.countDocuments(filter);
-    const totalPages = Math.ceil(totalPosts / limit);    
+    const totalPages = Math.ceil(totalPosts / limit);
     return {
         posts,
         page: page,
