@@ -35,7 +35,7 @@ class postController {
             metadata: await PostService.createPost({
                 title: req.body.title,
                 content: req.body.content,
-                classroom: req.body.classroom,
+                classId: req.body.classId,
                 author: req.userId,
                 tags: req.body.tags,
                 attachments: req.file,
