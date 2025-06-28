@@ -26,7 +26,7 @@ const SELECT_COURSE = {
     DEFAULT: "title description",
 };
 const SELECT_POST = {
-    FULL: "title content course author tags attachments createdAt",
+    FULL: "title content classroom course author tags attachments createdAt",
     DEFAULT: "title content course author createdAt",
 };
 const USER_ROLES = {

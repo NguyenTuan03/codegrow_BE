@@ -1,4 +1,3 @@
-const { filter } = require("lodash");
 const { SELECT_POST, FILTER_USER } = require("../configs/user.config");
 const { CREATED, UPDATED, OK, DELETED } = require("../core/responses/success.response");
 const PostService = require("../services/post.service");
@@ -7,14 +6,15 @@ class postController {
     getAllPosts = async (req, res) => {
         new OK({
             message: "Get all posts successfully",
-            metadata: await PostService.getAllPost({
+            metadata: await PostService.getAllPosts({
                 limit: req.query.limit || 1000,
                 sort: req.query.sort || "ctime",
                 page: req.query.page || 1,
                 filter: {
                     isDeleted: false,
+                    // classroom: req.query.classroom,
                 },
-                select: req.query.select || SELECT_POST.FULL,
+                select: SELECT_POST.FULL,
                 expand: req.query.expand || "",
             }),
         }).send(res);
