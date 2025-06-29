@@ -1,4 +1,5 @@
 const validator = require("validator");
+const { NotFoundRequestError } = require("../core/responses/error.response");
 
 const validFullName = async (fullName) => {
   if (!fullName) throw new BadRequestError("Full name is required.");
