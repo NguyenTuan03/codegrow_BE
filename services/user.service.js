@@ -233,15 +233,24 @@ class UserService {
             .populate("completedLessons")
             .populate("completedQuizzes")
             .populate("lastLesson");
-        console.log(progress);
         const totalLessons = await lessonModel.countDocuments({
             course: courseId,
         });
-        const completedCount = progress?.completedLessons?.length || 0;
-        console.log(completedCount, totalLessons);
+        const totalQuizzes = await quizzModel.countDocuments({
+            course: courseId,
+        });
+        const totalItems = totalLessons + totalQuizzes;
+
+        const completedLessonCount = progress?.completedLessons?.length || 0;
+        const completedQuizCount = progress?.completedQuizzes?.length || 0;
+
         const percent =
-            totalLessons > 0
-                ? Math.floor((completedCount / totalLessons) * 100)
+            totalItems > 0
+                ? Math.floor(
+                      ((completedLessonCount + completedQuizCount) /
+                          totalItems) *
+                          100
+                  )
                 : 0;
         return {
             completedLessons: progress?.completedLessons || [],
@@ -430,8 +439,8 @@ Hãy trả lời câu hỏi bên dưới một cách tự nhiên, thân thiện 
         const weakQuestions = questions.filter((q) =>
             failedQuizIds.includes(q?._id?.toString())
         );
-        console.log('weak question = ',weakQuestions);
-        
+        console.log("weak question = ", weakQuestions);
+
         const formattedQuestions = weakQuestions.map((q, i) => {
             if (q.type === "multiple_choice") {
                 const options = q.options
@@ -448,8 +457,8 @@ Hãy trả lời câu hỏi bên dưới một cách tự nhiên, thân thiện 
                 }`;
             }
         });
-        console.log('question = ', formattedQuestions);
-        
+        console.log("question = ", formattedQuestions);
+
         const promptToAI = `
 Người học đã làm sai các câu hỏi sau đây:
 
@@ -485,7 +494,7 @@ Hãy chọn 3 câu hỏi phù hợp để người học luyện tập lại.
                 timeout: 10000,
             }
         );
-        console.log('res=  ',gptResponse);        
+        console.log("res=  ", gptResponse);
         const reply =
             gptResponse?.data?.choices?.[0]?.message?.content ??
             "Không nhận được phản hồi từ AI.";
