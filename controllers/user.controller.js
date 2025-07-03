@@ -95,7 +95,7 @@ class UserController {
             message: "Get user's progress successfully",
             metadata: await UserService.getUserProgress({
                 id: req.userId,
-                ...req.body,
+                courseId: req.query.courseId,
             }),
         }).send(res);
     };
