@@ -27,7 +27,7 @@ const middlewareLoader = (app) => {
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     app.use(
         cors({
-            origin: "https://codegrow.vercel.app",
+            origin: process.env.CLIENT_URL,
             credentials: true,
             methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
             allowedHeaders: ["Content-Type", "Authorization"],

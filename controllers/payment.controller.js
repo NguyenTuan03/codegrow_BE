@@ -55,6 +55,7 @@ class paymentController {
                 status: req.query.status,
                 userId: req.query.userId,
                 courseId: req.query.courseId,
+                data: req.query,
             });
             return res.redirect(redirectUrl);
         } catch (err) {

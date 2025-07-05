@@ -5,11 +5,8 @@ function generateSignature(data, checksumKey) {
         `amount=${data.amount}` +
         `&cancelUrl=${data.cancelUrl}` +
         `&description=${data.description}` +
-        // `&extraData=${data.extraData}` +
         `&orderCode=${data.orderCode}` +
         `&returnUrl=${data.returnUrl}`;
-    console.log('raw data =', rawData);
-    
     return crypto
         .createHmac("sha256", checksumKey)
         .update(rawData)
