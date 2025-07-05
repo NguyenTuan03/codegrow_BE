@@ -8,14 +8,16 @@ const courseModel = require("../models/course.model");
 const crypto = require("crypto");
 const tempPaymentModel = require("../models/tempPayment.model");
 class paymentService {
-    static getUSerById = async ({ userId }) => {
+    static getUserById = async ({ userId }) => {
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             throw new BadRequestError("Invalid userId");
         }
 
-        const payments = await paymentModel.find({ user: userId }).sort({
-            createdAt: -1,
-        });
+        const payments = await paymentModel
+            .find({ user: userId })
+            .sort({ createdAt: -1 })
+            .populate("user")
+            .populate("course");
 
         return payments;
     };
@@ -104,6 +106,7 @@ class paymentService {
 
         await paymentModel.create({
             user: userId,
+            course: courseId,
             amount,
             transactionId: String(orderCode),
             status: "completed",
