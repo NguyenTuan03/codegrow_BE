@@ -20,7 +20,7 @@
     "express": "~4.21.0",
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
-    "http-errors": "~1.6.3",
+    "http-errors": "~2.0.0",
     "isolated-vm": "^5.0.4",
     "jade": "~1.11.0",
     "jsonwebtoken": "^9.0.2",
