@@ -278,9 +278,37 @@ class UserService {
                 throw new Error("Prompt không hợp lệ – cần là chuỗi");
             }
 
-            // Tìm kiếm theo tiêu đề gần đúng (không phân biệt hoa thường)
+            const aliasMap = {
+                fe: "FE",
+                frontend: "FE",
+                front_end: "FE",
+                "lập trình fe": "FE",
+
+                be: "BE",
+                backend: "BE",
+                back_end: "BE",
+
+                js: "JS",
+                javascript: "JS",
+
+                fullstack: "FullStack",
+                "full stack": "FullStack",
+
+                abap: "ABAP",
+
+                da: "DA",
+                "data analyst": "DA",
+
+                sap: "SAP",
+            };
+
+            // Chuẩn hóa từ khóa tìm kiếm
+            const normalized = promt.trim().toLowerCase();
+            const searchTerm = aliasMap[normalized] || promt;
+
+            // Tìm kiếm khóa học theo tên gần đúng
             const course = await courseModel
-                .findOne({ title: { $regex: new RegExp(promt, "i") } })
+                .findOne({ title: { $regex: new RegExp(searchTerm, "i") } })
                 .lean();
 
             let courseInfo = "";
@@ -289,13 +317,15 @@ class UserService {
                 courseInfo = `Không tìm thấy thông tin khóa học với tên "${promt}". Vui lòng kiểm tra lại tên khóa học.`;
             } else {
                 courseInfo = `
-                Tiêu đề: ${course.title}
-                Mô tả: ${course.description || "Chưa cập nhật"}
-                Nội dung chính: ${course.content || "Chưa cập nhật"}
-                Thời lượng: ${course.duration || "Chưa cập nhật"}
-                Học phí: ${course.price ?? "Chưa cập nhật"} VNĐ
-            `;
+    Tiêu đề: ${course.title}
+    Mô tả: ${course.description || "Chưa cập nhật"}
+    Nội dung chính: ${course.content || "Chưa cập nhật"}
+    Thời lượng: ${course.duration || "Chưa cập nhật"}
+    Học phí: ${course.price ?? "Chưa cập nhật"} VNĐ
+                `.trim();
             }
+
+            // Gửi prompt đến GPT
             const response = await axios.post(
                 process.env.URL_CHAT,
                 {
@@ -304,11 +334,22 @@ class UserService {
                     messages: [
                         {
                             role: "system",
-                            content: `Bạn là một tư vấn viên giáo dục chuyên nghiệp, nhiệm vụ của bạn là giới thiệu khóa học cho người học một cách gần gũi, rõ ràng và dễ hiểu. Dưới đây là thông tin khóa học cần giới thiệu:
-
-${courseInfo}
-
-Hãy diễn giải nội dung này theo cách tự nhiên, giống như đang tư vấn thật. Nếu dữ liệu còn thiếu, hãy nhắc khéo người dùng cập nhật thêm.`,
+                            content:
+                                `Bạn là một tư vấn viên giáo dục chuyên nghiệp. Dưới đây là các khóa học mà trung tâm hiện đang cung cấp: 
+    - FE (Front-End)
+    - BE (Back-End)
+    - JS (JavaScript cơ bản)
+    - FullStack (Lập trình toàn diện)
+    - ABAP (Ngôn ngữ ABAP - SAP)
+    - DA (Phân tích dữ liệu)
+    - SAP (Hệ thống quản trị doanh nghiệp SAP)
+    
+    Khi người dùng hỏi về một khóa học, hãy cố gắng diễn giải thông tin sao cho rõ ràng, dễ hiểu, giống như đang tư vấn trực tiếp. Nếu dữ liệu còn thiếu, hãy nhắc khéo người dùng cập nhật thêm.
+    
+    Thông tin khóa học được truy xuất như sau:
+    
+    ${courseInfo}
+                            `.trim(),
                         },
                         {
                             role: "user",
@@ -325,10 +366,8 @@ Hãy diễn giải nội dung này theo cách tự nhiên, giống như đang t�
                 }
             );
 
-            console.log(response);
-            const reply = response.data.choices[0].message.content;
-
-            return reply;
+            const reply = response.data.choices?.[0]?.message?.content;
+            return reply || "Không nhận được phản hồi từ GPT.";
         } catch (err) {
             console.error(
                 "Lỗi từ GPT API:",
