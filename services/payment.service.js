@@ -62,7 +62,7 @@ class paymentService {
             description: "Course payment",
             returnUrl: PAYOS.returnUrl,
             cancelUrl: PAYOS.cancelUrl,
-            extraData,
+            // extraData,
         };
 
         Object.keys(payload).forEach((k) => {
@@ -83,6 +83,8 @@ class paymentService {
             },
             { headers }
         );
+        console.log(res.data);
+        
         const payOSRes = res.data?.data;
         if (!payOSRes?.checkoutUrl) {
             throw new Error("Tạo link thanh toán PayOS thất bại");
