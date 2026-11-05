@@ -22,7 +22,7 @@
     "helmet": "^8.1.0",
     "http-errors": "~1.6.3",
     "isolated-vm": "^5.0.4",
-    "jade": "~1.11.0",
+    "pug": "~2.0.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
